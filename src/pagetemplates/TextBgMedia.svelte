@@ -1,0 +1,102 @@
+<script>
+
+    import BgMedia from "./BgMedia.svelte";
+    import Scrollmation from '../components/scrollmation.svelte'
+    import { cubicOut as easing } from 'svelte/easing';
+    export let chapter_number;
+    export let text_title;
+    export let text_subheading;
+    export let text_intro;
+    export let text_bodycopy;
+    export let image;
+    export let video;
+    export let bg_opacity;
+  
+    let scrollInstance, scrollData
+    export let scrollToPos
+    export let onNext = ()=>{}
+    export let onPrev= ()=>{}
+    export let onHome = ()=>{}
+    
+    export let isPrevNav = false
+  
+    $: bgOpacity = scrollData ? scrollData.scrollPos/scrollData.endScrollPos : bg_opacity
+    // $: fgOpacity = scrollData ? 1 - Math.abs(scrollData.homeScrollPos - scrollData.scrollPos)/ (scrollData.endScrollPos - scrollData.homeScrollPos): 0
+
+    // $: bgOpacity2 = scrollData ? scrollData.scrollPos/scrollData.homeScrollPos : bg_opacity
+    // $: if(scrollData) console.log(Math.abs(scrollData.homeScrollPos - scrollData.scrollPos))
+    // $: if(scrollData) console.log(scrollData)
+
+  </script>
+  
+  <Scrollmation
+    bind:this={scrollInstance}
+    startPos="{10}"
+    endPos="{0}"
+    duration={900}
+    easing={easing}
+    isPrevNav={isPrevNav}
+    bind:scrollData="{scrollData}"
+    bind:scrollToPos="{scrollToPos}"
+    on:next={onNext}
+    on:prev={onPrev}
+    on:home={onHome}
+  >
+    <div class="content" slot="fg">
+        {#if chapter_number}
+        <p>{chapter_number}</p>
+      {/if}
+
+      {#if text_title}
+        <h1>{text_title}</h1>
+      {/if}
+    
+      {#if text_subheading}
+        <h2>{text_subheading}</h2>
+      {/if}
+    
+      {#if text_intro}
+        <div class="text-intro">
+            {@html text_intro}
+        </div>
+      {/if}
+    
+      {#if text_bodycopy}
+        <div class="text-bodycopy">
+            {@html text_bodycopy}
+        </div>
+      {/if}
+      </div>
+  
+      <div slot="bg" >
+      <BgMedia {image} {video} bg_opacity={1-bgOpacity} />
+
+    </div>
+  
+  </Scrollmation>
+  
+  
+  
+  
+  <style>
+    .text-intro {
+    max-width: 60%;
+  }
+  h1 {
+    margin-top: 0;
+    font-size: 46pt;
+  }
+  h1:after {
+    content: "";
+    border-bottom: 4px solid #ffa52a;
+    display: block;
+    width: 50%;
+  }
+
+  .content {
+    max-width: 50%;
+    margin: 40px;
+
+  }
+  </style>
+
