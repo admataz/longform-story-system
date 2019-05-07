@@ -21,6 +21,7 @@
     export let isPrevNav = false
   
     $: bgOpacity = scrollData ? scrollData.scrollPos/scrollData.endScrollPos : bg_opacity
+    // $: console.log(bgOpacity)
     // $: fgOpacity = scrollData ? 1 - Math.abs(scrollData.homeScrollPos - scrollData.scrollPos)/ (scrollData.endScrollPos - scrollData.homeScrollPos): 0
 
     // $: bgOpacity2 = scrollData ? scrollData.scrollPos/scrollData.homeScrollPos : bg_opacity
@@ -69,7 +70,7 @@
       </div>
   
       <div slot="bg" >
-      <BgMedia {image} {video} bg_opacity={1-bgOpacity} />
+      <BgMedia {image} {video} bg_opacity={1-bgOpacity-0.01} />
 
     </div>
   

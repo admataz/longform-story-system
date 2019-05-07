@@ -2,7 +2,7 @@ import getContent from './_pages'
 const lookup = new Map();
 export function get(req, res, next) {
 	const { pgId: slug } = req.params;
-	// TODO: will run this every request? need a way to memoize this - or does sapper cache results?
+	// TODO: this will run on every request...  need a way to memoize this - or does sapper cache results?
 	getContent((err, pages) => {
 		try{
 			const pgData = JSON.parse(pages)
