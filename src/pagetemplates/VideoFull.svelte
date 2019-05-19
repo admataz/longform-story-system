@@ -2,7 +2,7 @@
 
     import BgMedia from "./BgMedia.svelte"
     import Scrollmation from '../components/scrollmation.svelte'
-    import { cubicOut as easing } from 'svelte/easing'
+    import { quadOut as easing } from 'svelte/easing'
     export let chapter_number
     export let text_title
     export let text_subheading
@@ -26,9 +26,10 @@
       scrollData = evt.detail
     }
   
-    $: maskHeight = scrollData ? Math.abs(1-scrollData.scrollPos/scrollData.homeScrollPos)*50 : 100
-    $: videoPaused = (maskHeight > 10) || !isActive
-    
+    $: maskHeight = scrollData ? Math.abs(scrollData.toHomeRatio) * 50 : 100
+    $: videoPaused = !isActive || maskHeight > 20
+    $: videoOpacity = scrollData ?  1 - Math.abs(scrollData.toHomeRatio)  : 0 
+    // $: console.log(scrollData)
 
   </script>
    <div class="mask" style="top:-1px;  height: {maskHeight}%"></div>
@@ -55,7 +56,7 @@
 </div>
 
 <div slot="bg"  class="full-screen media-video" >
-<video autoplay={isActive} bind:paused="{videoPaused}" controls >
+<video autoplay={isActive} bind:paused="{videoPaused}" controls>
   <source src={video} />
 </video>
 </div>
@@ -63,10 +64,10 @@
 <style>
   
   .mask{
-    background: rgba(0,0,0,0.8);
+    background: #1E1E23;
     border-bottom: 0px solid white;
     border-top: 0px solid white;
-    height: 50%;
+    height: 100vh;
     width: 100%;
     position: absolute;
   }
@@ -81,6 +82,7 @@
 
   video {
     height: 100%;
+    opacity: 1;
   }
 
 </style>

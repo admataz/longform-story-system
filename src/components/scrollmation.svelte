@@ -95,7 +95,7 @@
   $: endScrollPos = containerHeight + contentHeight + endPos + startPos
   $: startScrollPos = 0
   $: homeScrollPos = containerHeight - homePos + startPos
-  $: scrollDir - scrollPos - prevScrollPos
+  $: scrollDir = scrollPos - prevScrollPos
   $: scrollToPos(scrollToPosition)
   $: {if(pgId){
     initPos()
@@ -108,7 +108,15 @@
       endScrollPos,
       startScrollPos,
       homeScrollPos,
-      scrollDir
+      scrollDir,
+      toHomeRatio: (homeScrollPos - scrollPos)/(homeScrollPos - startScrollPos),
+      toStartRatio: (scrollPos - startScrollPos)/(homeScrollPos - startScrollPos),
+      toEndRatio: (scrollPos - endScrollPos)/(homeScrollPos - endScrollPos),
+      toRangeRatio: (scrollPos - endScrollPos)/(startScrollPos - endScrollPos),
+      fullRangePx: (endScrollPos - startScrollPos),
+      toHomePx: (homeScrollPos - scrollPos),
+      toEndPx: (endScrollPos - scrollPos),
+      toStartPx: (startScrollPos - scrollPos)
     }
   }
 

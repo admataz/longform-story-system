@@ -28,11 +28,13 @@
   }
 
   $: bgOpacity = scrollData ? scrollData.scrollPos/scrollData.endScrollPos : bg_opacity
+  // $: console.log(scrollData)
+
 </script>
 
 <Scrollmation
 	bind:this={scrollInstance}
-  startPos="{-400}"
+  startPos="{10}"
 	endPos="{0}"
 	duration={900}
   easing={easing}

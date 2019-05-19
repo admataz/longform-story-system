@@ -50,9 +50,7 @@
     }
   }
 
-  
   let scrollToPosition = null
-
 
   function onKeyDown({key}) {
     if (key === 'ArrowRight' || key === 'ArrowDown') {
@@ -72,7 +70,9 @@
   async function navPrev(e) {
     isPrevNav = true
     scrollToPosition = null
-    goto(prevPage.slug)
+    if(prevPage){
+      goto(prevPage.slug)
+    }
   }
 
   function navHome() {}
@@ -88,7 +88,7 @@
   $: currentPage = pages.find(p => p.slug === pgId)
   $: nextPage = currentPage ? currentPage._nav.next : null
   $: prevPage = currentPage ? currentPage._nav.prev : null
-  $: pagesQueue = [currentPage, nextPage, prevPage]
+  $: pagesQueue = [currentPage]
   $: console.log(currentPage.template)
 </script>
 
@@ -99,31 +99,45 @@
   <a
     href="{prevPage.slug}"
     on:click|preventDefault="{onClickPrev}"
-    rel="prefetch">
-    Prev</a>
+    rel="prefetch"
+  >
+    Prev</a
+  >
   {/if} 
   
   {#if nextPage}
   <a
     href="{nextPage.slug}"
     on:click|preventDefault="{onClickNext}"
-    rel="prefetch">Next</a>
+    rel="prefetch"
+    >Next</a
+  >
   {/if}
 </div>
 
-
-
-<div id="{pgId}">
+{#each pagesQueue as page}
+<div id="{page.slug}" class={page.slug===pgId ? 'active' : 'queued'}>
   <svelte:component
-    this="{templates[currentPage.template]}"
-    {...formatPageData(currentPage)}
-    onNext={navNext}
-    onPrev={navPrev}
-    onHome={navHome}
+    this="{templates[page.template]}"
+    {...formatPageData(page)}
+    onNext="{navNext}"
+    onPrev="{navPrev}"
+    onHome="{navHome}"
     {scrollToPosition}
     {isPrevNav}
-    {pgId}
-    isActive={true}
+    pgId={page.slug}
+    isActive={page.slug===pgId}
   />
-
 </div>
+{/each}
+<style>
+  .active {
+    display: block;
+
+  }
+  .queued {
+    display: none;
+    visibility: hidden;
+    /* position: absolute; */
+  }
+</style>

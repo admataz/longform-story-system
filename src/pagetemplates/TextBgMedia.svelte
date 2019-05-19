@@ -28,7 +28,23 @@
     }
 
 
-    $: bgOpacity = scrollData ? scrollData.scrollPos/scrollData.endScrollPos : bg_opacity
+    $: bgOpacity = scrollData ?  Math.abs(scrollData.toEndRatio-0.4) : bg_opacity
+    // $: console.log(bgOpacity)
+
+
+
+    // $: console.log(scrollData)
+
+    /*
+    containerHeight: 916
+    contentHeight: 1413
+    endScrollPos: 2339
+    homeScrollPos: 826
+    scrollDir: undefined
+    scrollPos: 1071
+    startScrollPos: 0
+    */
+
     // $: console.log(bgOpacity)
     // $: fgOpacity = scrollData ? 1 - Math.abs(scrollData.homeScrollPos - scrollData.scrollPos)/ (scrollData.endScrollPos - scrollData.homeScrollPos): 0
 
