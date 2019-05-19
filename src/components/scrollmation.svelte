@@ -1,8 +1,7 @@
 <script>
-  import {onMount} from 'svelte'
+  import {afterUpdate, createEventDispatcher, onMount} from 'svelte'
   import {tweened} from 'svelte/motion'
   import {cubicOut} from 'svelte/easing'
-  import {createEventDispatcher} from 'svelte'
   const dispatch = createEventDispatcher()
 
   let contentHeight
@@ -22,6 +21,7 @@
     if (!animatingScroll) {
       progress.set(scrollPos, {duration:0})
     }
+    dispatch('scroll', scrollData)
     if (prevScrollPos !== scrollPos) {
       if (scrollPos === endScrollPos) {
         dispatch('next', scrollData)
@@ -42,6 +42,8 @@
   export let easing = cubicOut
   export let scrollData = {}
   export let isPrevNav = false
+  export let scrollToPosition = null
+  export  let pgId
 
   export let progress = tweened(0, {
     duration,
@@ -50,6 +52,9 @@
 
 
   export async function scrollToPos(destPos = 'home', anim = true) {
+    if(!destPos){
+      return
+    }
     let destPx=0
     switch (destPos) {
       case 'start':
@@ -77,14 +82,24 @@
       await progress.set(destPx, {duration:0})
     }
   }
+  function initPos(){
+    if(isPrevNav){
+      setTimeout(()=>scrollToPos('beforeEnd', false))
+    } else {
+      setTimeout(()=>scrollToPos('beforeStart', false))
+    }
+    setTimeout(()=>scrollToPos('home'))
+  }
 
   $: if (animatingScroll) container.scrollTop = $progress
   $: endScrollPos = containerHeight + contentHeight + endPos + startPos
   $: startScrollPos = 0
   $: homeScrollPos = containerHeight - homePos + startPos
   $: scrollDir - scrollPos - prevScrollPos
-  // $: console.log($progress)
-
+  $: scrollToPos(scrollToPosition)
+  $: {if(pgId){
+    initPos()
+  }}
   $: {
     scrollData = {
       contentHeight,
@@ -97,12 +112,7 @@
     }
   }
 
-  onMount(() => {
-    if(isPrevNav){
-      setTimeout(()=>scrollToPos('beforeEnd', false))
-    }
-    setTimeout(()=>scrollToPos('home'))
-  })
+  onMount(initPos)
 </script>
 
 <style>

@@ -11,16 +11,20 @@
     export let image;
     export let video;
     export let bg_opacity;
+    export let pgId
+    export let isActive
   
     let scrollInstance, scrollData
-    export let scrollToPos
+    export let scrollToPosition
     export let onNext = ()=>{}
     export let onPrev= ()=>{}
     export let onHome = ()=>{}
     
     export let isPrevNav = false
   
-  
+    function onScroll(evt){
+      console.log(evt.details)
+    }
   </script>
   
   <Scrollmation
@@ -30,11 +34,11 @@
     duration={900}
     easing={easing}
     isPrevNav={isPrevNav}
-    bind:scrollData="{scrollData}"
-    bind:scrollToPos="{scrollToPos}"
+    {scrollToPosition}
     on:next={onNext}
     on:prev={onPrev}
     on:home={onHome}
+    on:scroll={onScroll}
   >
     <div class="content fg" slot="fg">
     {#if chapter_number}

@@ -11,14 +11,21 @@
   export let image;
   export let video;
   export let bg_opacity;
+  export let pgId
+  export let isActive
 
   let scrollInstance, scrollData
-  export let scrollToPos
+  export let scrollToPosition
   export let onNext = ()=>{}
   export let onPrev= ()=>{}
   export let onHome = ()=>{}
   
   export let isPrevNav = false
+
+
+  function onScroll(evt){
+    scrollData = evt.detail
+  }
 
   $: bgOpacity = scrollData ? scrollData.scrollPos/scrollData.endScrollPos : bg_opacity
 </script>
@@ -30,11 +37,11 @@
 	duration={900}
   easing={easing}
   isPrevNav={isPrevNav}
-	bind:scrollData="{scrollData}"
-	bind:scrollToPos="{scrollToPos}"
+	{scrollToPosition}
 	on:next={onNext}
 	on:prev={onPrev}
-	on:home={onHome}
+  on:home={onHome}
+  on:scroll={onScroll}
 >
   <div class="contentpanel" slot="fg" >
       {#if chapter_number}

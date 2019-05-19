@@ -11,15 +11,23 @@
     export let image;
     export let video;
     export let bg_opacity;
+    export let pgId
+    export let isActive
+    
   
     let scrollInstance, scrollData
-    export let scrollToPos
+    export let scrollToPosition
     export let onNext = ()=>{}
     export let onPrev= ()=>{}
     export let onHome = ()=>{}
     
     export let isPrevNav = false
-  
+
+    function onScroll(evt){
+      scrollData = evt.detail
+    }
+
+
     $: bgOpacity = scrollData ? scrollData.scrollPos/scrollData.endScrollPos : bg_opacity
     // $: console.log(bgOpacity)
     // $: fgOpacity = scrollData ? 1 - Math.abs(scrollData.homeScrollPos - scrollData.scrollPos)/ (scrollData.endScrollPos - scrollData.homeScrollPos): 0
@@ -33,15 +41,17 @@
   <Scrollmation
     bind:this={scrollInstance}
     startPos="{10}"
+    homePos="{100}"
     endPos="{0}"
     duration={900}
     easing={easing}
     isPrevNav={isPrevNav}
-    bind:scrollData="{scrollData}"
-    bind:scrollToPos="{scrollToPos}"
+    {scrollToPosition}
     on:next={onNext}
     on:prev={onPrev}
     on:home={onHome}
+    on:scroll={onScroll}
+    {pgId}
   >
     <div class="content" slot="fg">
         {#if chapter_number}
