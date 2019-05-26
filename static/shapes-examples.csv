@@ -1,0 +1,7 @@
+slug,template,text_title,text_intro,text_bodycopy,image,video
+pg001,measurement,,,Tempor tempor elit mollit culpa,http://localhost:3000/sample-1.jpg,
+progressbar,measurement,,,Tempor tempor elit mollit culpa. Pariatur dolore laborum cupidatat esse. Voluptate consequat cupidatat irure occaecat sit. Non pariatur ex aute exercitation Lorem cillum adipisicing. Eu non anim mollit culpa.,http://localhost:3000/sample-1.jpg,
+progressbar2,measurement,,,Tempor tempor elit mollit culpa. Pariatur dolore laborum cupidatat esse. Voluptate consequat cupidatat irure occaecat sit. Non pariatur ex aute exercitation Lorem cillum adipisicing. Eu non anim mollit culpa.,http://localhost:3000/sample-1.jpg,
+clipped-bg,measurement,,,Culpa aute ea aliquip in occaecat dolore velit incididunt occaecat officia. Adipisicing fugiat do et occaecat labore esse aliqua qui proident. Labore deserunt ipsum aute nisi consequat sunt ex eiusmod.,http://localhost:3000/sample-1.jpg,
+last-item,measurement,,,this is the last item,http://localhost:3000/sample-1.jpg,
+repeated-bg,measurement,,,Enim qui qui enim proident et esse aliquip aliqua duis. Enim tempor culpa ullamco anim tempor voluptate sit nulla magna dolor nisi. Dolore ipsum eu labore reprehenderit. Elit eiusmod reprehenderit laborum,http://localhost:3000/sample-1.jpg,

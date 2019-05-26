@@ -27,7 +27,7 @@
     }
   
     $: maskHeight = scrollData ? Math.abs(scrollData.toHomeRatio) * 50 : 100
-    $: videoPaused = !isActive || maskHeight > 20
+    $: videoPaused = scrollData ? !isActive || maskHeight > 20 : true
     $: videoOpacity = scrollData ?  1 - Math.abs(scrollData.toHomeRatio)  : 0 
     // $: console.log(scrollData)
 

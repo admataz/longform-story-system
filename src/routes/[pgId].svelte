@@ -29,6 +29,7 @@
   import TextBgMedia from '../pagetemplates/TextBgMedia.svelte'
   import TextImage from '../pagetemplates/TextImage.svelte'
   import TextVideo from '../pagetemplates/TextVideo.svelte'
+  import Measurement from '../pagetemplates/Measurement.svelte'
 
   const templates = {
     'chapter-title': ChapterTitle,
@@ -37,6 +38,7 @@
     'text-bg-media': TextBgMedia,
     'text-image': TextImage,
     'text-video': TextVideo,
+    'measurement': Measurement,
   }
 
   const formatPageData = page => {
@@ -45,26 +47,31 @@
     }
     return {
       ...page,
-      text_intro: marked(page.text_intro),
-      text_bodycopy: marked(page.text_bodycopy),
+      text_intro: marked(page.text_intro || ''),
+      text_bodycopy: marked(page.text_bodycopy || '')
     }
   }
-
+  let canNav = true
   let scrollToPosition = null
+  function scrollTo(pos) {
+    scrollToPosition = pos
+  }
 
   function onKeyDown({key}) {
     if (key === 'ArrowRight' || key === 'ArrowDown') {
-      scrollToPosition = 'end'
+      scrollTo('end')
     }
     if (key === 'ArrowLeft' || key === 'ArrowUp') {
-      scrollToPosition = 'start'
+      scrollTo('start')
     }
   }
 
   async function navNext(e) {
     isPrevNav = false
     scrollToPosition = null
-    goto(nextPage.slug)
+    if(nextPage){
+      goto(nextPage.slug)
+    }
   }
 
   async function navPrev(e) {
@@ -75,21 +82,22 @@
     }
   }
 
-  function navHome() {}
+  function navHome(e) {
+    // console.log(e)
+  }
 
   function onClickPrev() {
-    scrollToPosition = 'start'
+    scrollTo('start')
   }
 
   function onClickNext() {
-    scrollToPosition = 'end'
+    scrollTo('end')
   }
 
   $: currentPage = pages.find(p => p.slug === pgId)
   $: nextPage = currentPage ? currentPage._nav.next : null
   $: prevPage = currentPage ? currentPage._nav.prev : null
-  $: pagesQueue = [currentPage]
-  $: console.log(currentPage.template)
+  $: pagesQueue = [currentPage, nextPage, prevPage].filter(p => p)
 </script>
 
 <svelte:window on:keydown="{onKeyDown}" />
@@ -133,11 +141,8 @@
 <style>
   .active {
     display: block;
-
   }
   .queued {
     display: none;
-    visibility: hidden;
-    /* position: absolute; */
   }
 </style>
