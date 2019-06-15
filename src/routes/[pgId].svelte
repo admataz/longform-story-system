@@ -19,29 +19,34 @@
 </script>
 
 <script>
-    export let pages, pgId, pgData, scrollToPos, isPrevNav
+    
     import { goto } from '@sapper/app'
     import { fade } from 'svelte/transition'
     import marked from 'marked'
-    import ChapterTitle from '../pagetemplates/ChapterTitle.svelte'
-    import TextMediaSplit from '../pagetemplates/TextMediaSplit.svelte'
-    import VideoFull from '../pagetemplates/VideoFull.svelte'
-    import TextBgMedia from '../pagetemplates/TextBgMedia.svelte'
-    import TextImage from '../pagetemplates/TextImage.svelte'
-    import TextVideo from '../pagetemplates/TextVideo.svelte'
+    // import ChapterTitle from '../pagetemplates/ChapterTitle.svelte'
+    // import TextMediaSplit from '../pagetemplates/TextMediaSplit.svelte'
+    // import VideoFull from '../pagetemplates/VideoFull.svelte'
+    // import TextBgMedia from '../pagetemplates/TextBgMedia.svelte'
+    // import TextImage from '../pagetemplates/TextImage.svelte'
+    // import TextVideo from '../pagetemplates/TextVideo.svelte'
     import Measurement from '../pagetemplates/Measurement.svelte'
 
+    export let pages, pgId, pgData, scrollToPos, isPrevNav
+    let canNav = true
+    let scrollToPosition = null
+
+
     const templates = {
-        'chapter-title': ChapterTitle,
-        'text-media-split': TextMediaSplit,
-        'video-full': VideoFull,
-        'text-bg-media': TextBgMedia,
-        'text-image': TextImage,
-        'text-video': TextVideo,
+        // 'chapter-title': ChapterTitle,
+        // 'text-media-split': TextMediaSplit,
+        // 'video-full': VideoFull,
+        // 'text-bg-media': TextBgMedia,
+        // 'text-image': TextImage,
+        // 'text-video': TextVideo,
         measurement: Measurement,
     }
 
-    const formatPageData = page => {
+    function formatPageData (page){
         if (!page) {
             return null
         }
@@ -51,8 +56,7 @@
             text_bodycopy: marked(page.text_bodycopy || ''),
         }
     }
-    let canNav = true
-    let scrollToPosition = null
+
     function scrollTo(pos) {
         scrollToPosition = pos
     }

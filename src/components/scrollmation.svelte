@@ -1,3 +1,15 @@
+<script context="module">
+  export const toHomeRatio = ({homeScrollPos, scrollPosPx, startScrollPosPx}) => (homeScrollPos - scrollPosPx) / (homeScrollPos - startScrollPosPx)
+  export const toStartRatio = ({homeScrollPos, scrollPosPx, startScrollPosPx}) => (scrollPosPx - startScrollPosPx) / (homeScrollPos - startScrollPosPx)
+  export const toEndRatio = ({scrollPosPx, endScrollPosPx, homeScrollPos}) => (scrollPosPx - endScrollPosPx) / (homeScrollPos - endScrollPosPx)
+  export const toRangeRatio = ({scrollPosPx, endScrollPosPx, startScrollPosPx}) => (scrollPosPx - endScrollPosPx) / (startScrollPosPx - endScrollPosPx)
+  export const fullRangePx = ({endScrollPosPx, startScrollPosPx}) => endScrollPosPx - startScrollPosPx
+  export const toHomePx = ({homeScrollPos, scrollPosPx}) => homeScrollPos - scrollPosPx
+  export const toEndPx = (endScrollPosPx, scrollPosPx) => endScrollPosPx - scrollPosPx
+  export const toStartPx = (startScrollPosPx, scrollPosPx) =>  startScrollPosPx - scrollPosPx
+</script>
+
+
 <script>
     import { afterUpdate, createEventDispatcher, onMount } from 'svelte'
     import { tweened } from 'svelte/motion'
@@ -113,7 +125,6 @@
 
     $: if (animatingScroll) container.scrollTop = $progress
     $: endScrollPosPx = containerHeight + contentHeight + endPos + startPos
-    $: startScrollPosPx = 0
     $: homeScrollPos = containerHeight - homePos + startPos
     $: scrollDir = scrollPosPx - prevScrollPosPx
     $: scrollToPos(scrollToPosition)
@@ -126,23 +137,7 @@
             endScrollPosPx,
             startScrollPosPx,
             homeScrollPos,
-            scrollDir,
-            toHomeRatio:
-                (homeScrollPos - scrollPosPx) /
-                (homeScrollPos - startScrollPosPx),
-            toStartRatio:
-                (scrollPosPx - startScrollPosPx) /
-                (homeScrollPos - startScrollPosPx),
-            toEndRatio:
-                (scrollPosPx - endScrollPosPx) /
-                (homeScrollPos - endScrollPosPx),
-            toRangeRatio:
-                (scrollPosPx - endScrollPosPx) /
-                (startScrollPosPx - endScrollPosPx),
-            fullRangePx: endScrollPosPx - startScrollPosPx,
-            toHomePx: homeScrollPos - scrollPosPx,
-            toEndPx: endScrollPosPx - scrollPosPx,
-            toStartPx: startScrollPosPx - scrollPosPx,
+            scrollDir
         }
     }
 </script>

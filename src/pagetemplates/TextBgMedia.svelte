@@ -1,6 +1,6 @@
 <script>
     import BgMedia from './BgMedia.svelte'
-    import Scrollmation from '../components/scrollmation.svelte'
+    import Scrollmation, {toEndRatio} from '../components/scrollmation.svelte'
     import { cubicOut as easing } from 'svelte/easing'
     export let chapter_number
     export let text_title
@@ -26,7 +26,7 @@
     }
 
     $: bgOpacity = scrollData
-        ? Math.abs(scrollData.toEndRatio - 0.4)
+        ? Math.abs(toEndRatio(scrollData) - 0.4)
         : bg_opacity
     // $: console.log(bgOpacity)
 

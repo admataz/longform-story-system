@@ -26,11 +26,11 @@
     }
 
     $: rotatingSquareStyle = scrollData
-        ? `transform: rotate(${scrollData.toRangeRatio}turn)`
+        ? '' // `transform: rotate(${toRangeRatio(scrollData)}turn)`
         : ''
 
     $: progressBarStyle = scrollData
-        ? `height: ${(1 - scrollData.toEndRatio) * 100}%`
+        ? '' // `height: ${(1 - toEndRatio(scrollData)) * 100}%`
         : ''
 
     // $: console.log(rotatingSquareStyle)

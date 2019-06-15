@@ -1,6 +1,6 @@
 <script>
     import BgMedia from './BgMedia.svelte'
-    import Scrollmation from '../components/scrollmation.svelte'
+    import Scrollmation, {toHomeRatio} from '../components/scrollmation.svelte'
     import { quadOut as easing } from 'svelte/easing'
     export let chapter_number
     export let text_title
@@ -25,9 +25,9 @@
         scrollData = evt.detail
     }
 
-    $: maskHeight = scrollData ? Math.abs(scrollData.toHomeRatio) * 50 : 100
+    $: maskHeight = scrollData ? Math.abs(toHomeRatio(scrollData)) * 50 : 100
     $: videoPaused = scrollData ? !isActive || maskHeight > 20 : true
-    $: videoOpacity = scrollData ? 1 - Math.abs(scrollData.toHomeRatio) : 0
+    $: videoOpacity = scrollData ? 1 - Math.abs(toHomeRatio(scrollData)) : 0
     // $: console.log(scrollData)
 </script>
 
