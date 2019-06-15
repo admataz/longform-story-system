@@ -153,14 +153,6 @@
         height: 100vh;
         overflow: auto;
     }
-    .bg {
-        position: fixed;
-        width: 100vw;
-        height: 100vh;
-        top: 0;
-        left: 0;
-        z-index: -1;
-    }
 </style>
 
 <div
@@ -175,8 +167,5 @@
         style=" margin-top: {containerHeight + startPos}px; margin-bottom: {containerHeight + endPos}px
         ">
         <slot name="fg" />
-    </div>
-    <div class="bg">
-        <slot name="bg" />
     </div>
 </div>

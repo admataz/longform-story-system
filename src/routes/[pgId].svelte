@@ -97,7 +97,7 @@
     $: currentPage = pages.find(p => p.slug === pgId)
     $: nextPage = currentPage ? currentPage._nav.next : null
     $: prevPage = currentPage ? currentPage._nav.prev : null
-    $: pagesQueue = [currentPage, nextPage, prevPage].filter(p => p)
+    $: pagesQueue = [currentPage].filter(p => p)
 </script>
 
 <style>
