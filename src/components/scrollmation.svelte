@@ -1,19 +1,45 @@
 <script context="module">
-  export const toHomeRatio = ({homeScrollPos, scrollPosPx, startScrollPosPx}) => (homeScrollPos - scrollPosPx) / (homeScrollPos - startScrollPosPx)
-  export const toStartRatio = ({homeScrollPos, scrollPosPx, startScrollPosPx}) => (scrollPosPx - startScrollPosPx) / (homeScrollPos - startScrollPosPx)
-  export const toEndRatio = ({scrollPosPx, endScrollPosPx, homeScrollPos}) => (scrollPosPx - endScrollPosPx) / (homeScrollPos - endScrollPosPx)
-  export const toRangeRatio = ({scrollPosPx, endScrollPosPx, startScrollPosPx}) => (scrollPosPx - endScrollPosPx) / (startScrollPosPx - endScrollPosPx)
-  export const fullRangePx = ({endScrollPosPx, startScrollPosPx}) => endScrollPosPx - startScrollPosPx
-  export const toHomePx = ({homeScrollPos, scrollPosPx}) => homeScrollPos - scrollPosPx
-  export const toEndPx = (endScrollPosPx, scrollPosPx) => endScrollPosPx - scrollPosPx
-  export const toStartPx = (startScrollPosPx, scrollPosPx) =>  startScrollPosPx - scrollPosPx
-</script>
+    export const toHomeRatio = ({
+        homeScrollPos,
+        scrollPosPx,
+        startScrollPosPx,
+    }) => (homeScrollPos - scrollPosPx) / (homeScrollPos - startScrollPosPx)
 
+    export const toStartRatio = ({
+        homeScrollPos,
+        scrollPosPx,
+        startScrollPosPx,
+    }) => (scrollPosPx - startScrollPosPx) / (homeScrollPos - startScrollPosPx)
+
+    export const toEndRatio = ({
+        scrollPosPx,
+        endScrollPosPx,
+        homeScrollPos,
+    }) => (scrollPosPx - endScrollPosPx) / (homeScrollPos - endScrollPosPx)
+
+    export const toRangeRatio = ({
+        scrollPosPx,
+        endScrollPosPx,
+        startScrollPosPx,
+    }) => (scrollPosPx - endScrollPosPx) / (startScrollPosPx - endScrollPosPx)
+
+    export const fullRangePx = ({ endScrollPosPx, startScrollPosPx }) =>
+        endScrollPosPx - startScrollPosPx
+
+    export const toHomePx = ({ homeScrollPos, scrollPosPx }) =>
+        homeScrollPos - scrollPosPx
+
+    export const toEndPx = (endScrollPosPx, scrollPosPx) =>
+        endScrollPosPx - scrollPosPx
+
+    export const toStartPx = (startScrollPosPx, scrollPosPx) =>
+        startScrollPosPx - scrollPosPx
+</script>
 
 <script>
     import { afterUpdate, createEventDispatcher, onMount } from 'svelte'
     import { tweened } from 'svelte/motion'
-    import { cubicOut } from 'svelte/easing'
+    import { cubicOut, linear } from 'svelte/easing'
     const dispatch = createEventDispatcher()
 
     let contentHeight
@@ -23,14 +49,15 @@
     let scrollPosPx = 0
     let animatingScroll = false
     let endScrollPosPx
-    let startScrollPosPx
+    let startScrollPosPx = 0
     let prevScrollPosPx
     let targetScollPx
     let scrollDir
+    let targetPos = 'home'
 
-    export let startPos = 110 // px past the end
-    export let homePos = 80 //px from the top
-    export let endPos = 120 // px above the top
+    export let startPos = 10 // px past the end
+    export let homePos = 120 //px from the top
+    export let endPos = 10 // px above the top
     export let duration = 800
     export let easing = cubicOut
     export let scrollData = {}
@@ -47,10 +74,9 @@
         }
 
         let action = null
-
+        
         if (prevScrollPosPx !== scrollPosPx) {
             dispatch('scroll', scrollData)
-
             if (scrollPosPx === endScrollPosPx) {
                 action = 'next'
             }
@@ -87,6 +113,7 @@
         if (!destPos) {
             return
         }
+        targetPos = destPos
         switch (destPos) {
             case 'start':
                 targetScollPx = startScrollPosPx
@@ -137,15 +164,16 @@
             endScrollPosPx,
             startScrollPosPx,
             homeScrollPos,
-            scrollDir
+            scrollDir,
         }
     }
+
 </script>
 
 <style>
     .container {
-        width: 100vw;
-        height: 100vh;
+        width: 100%;
+        height: 100%;
         overflow: auto;
     }
 </style>

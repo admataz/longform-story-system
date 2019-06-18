@@ -2,15 +2,18 @@
     export async function preload({ params }) {
         const res = await this.fetch(`pages.json`)
         const pgData = await res.json()
-        const pages = pgData.map((page, index) => {
-            return {
+
+        const pages = pgData.reduce((acc, page, index, arr) => {
+            const p = {
                 ...page,
                 _nav: {
-                    prev: index ? pgData[index - 1] : null,
-                    next: index + 1 < pgData.length ? pgData[index + 1] : null,
+                    prev: index ? arr[index - 1].slug : null,
+                    next: index + 1 < arr.length ? arr[index + 1].slug : null,
                 },
             }
-        })
+            acc[page.slug] = p
+            return acc
+        }, {})
         return {
             pages,
             pgId: params.pgId,
@@ -19,34 +22,44 @@
 </script>
 
 <script>
-    
     import { goto } from '@sapper/app'
-    import { fade } from 'svelte/transition'
     import marked from 'marked'
-    // import ChapterTitle from '../pagetemplates/ChapterTitle.svelte'
-    // import TextMediaSplit from '../pagetemplates/TextMediaSplit.svelte'
-    // import VideoFull from '../pagetemplates/VideoFull.svelte'
-    // import TextBgMedia from '../pagetemplates/TextBgMedia.svelte'
-    // import TextImage from '../pagetemplates/TextImage.svelte'
-    // import TextVideo from '../pagetemplates/TextVideo.svelte'
+    import { fade } from 'svelte/transition'
+    import Scrollmation, {
+        toHomeRatio,
+        toStartRatio,
+        toEndRatio,
+        toRangeRatio,
+        fullRangePx,
+        toHomePx,
+        toEndPx,
+        toStartPx,
+    } from '../components/scrollmation.svelte'
+    import BgMedia from '../pagetemplates/BgMedia.svelte'
+    import ChapterTitle from '../pagetemplates/ChapterTitle.svelte'
+    import TextMediaSplit from '../pagetemplates/TextMediaSplit.svelte'
+    import VideoFull from '../pagetemplates/VideoFull.svelte'
+    import TextBgMedia from '../pagetemplates/TextBgMedia.svelte'
+    import TextImage from '../pagetemplates/TextImage.svelte'
+    import TextVideo from '../pagetemplates/TextVideo.svelte'
     import Measurement from '../pagetemplates/Measurement.svelte'
-
-    export let pages, pgId, pgData, scrollToPos, isPrevNav
+    export let pages, pagesObj, pgId, pgData, scrollToPos, isPrevNav
     let canNav = true
     let scrollToPosition = null
-
+    let scrollData
+    let lastPage = null
 
     const templates = {
-        // 'chapter-title': ChapterTitle,
-        // 'text-media-split': TextMediaSplit,
-        // 'video-full': VideoFull,
-        // 'text-bg-media': TextBgMedia,
-        // 'text-image': TextImage,
-        // 'text-video': TextVideo,
+        'chapter-title': ChapterTitle,
+        'text-media-split': TextMediaSplit,
+        'video-full': VideoFull,
+        'text-bg-media': TextBgMedia,
+        'text-image': TextImage,
+        'text-video': TextVideo,
         measurement: Measurement,
     }
 
-    function formatPageData (page){
+    function formatPageData(page) {
         if (!page) {
             return null
         }
@@ -74,7 +87,9 @@
         isPrevNav = false
         scrollToPosition = null
         if (nextPage) {
-            goto(nextPage.slug)
+            lastPage = currentPage
+            currentPage = pages[nextPage]
+            goto(nextPage)
         }
     }
 
@@ -82,7 +97,9 @@
         isPrevNav = true
         scrollToPosition = null
         if (prevPage) {
-            goto(prevPage.slug)
+            lastPage = currentPage
+            currentPage = pages[prevPage]
+            goto(prevPage)
         }
     }
 
@@ -98,54 +115,57 @@
         scrollTo('end')
     }
 
-    $: currentPage = pages.find(p => p.slug === pgId)
+    function onScroll(evt) {
+        scrollData = evt.detail
+    }
+
+    $: currentPage = pages[pgId]
     $: nextPage = currentPage ? currentPage._nav.next : null
     $: prevPage = currentPage ? currentPage._nav.prev : null
-    $: pagesQueue = [currentPage].filter(p => p)
+    $: pagesQueue = [nextPage, prevPage, currentPage]
+        .filter(p => p)
+        .map(p => p.slug)
 </script>
-
-<style>
-    .active {
-        display: block;
-    }
-    .queued {
-        display: none;
-    }
-</style>
 
 <svelte:window on:keydown={onKeyDown} />
 
 <div class="nav">
     {#if prevPage}
-        <a
-            href={prevPage.slug}
-            on:click|preventDefault={onClickPrev}
-            rel="prefetch">
+        <a href={prevPage} on:click|preventDefault={onClickPrev} rel="prefetch">
             Prev
         </a>
     {/if}
 
     {#if nextPage}
-        <a
-            href={nextPage.slug}
-            on:click|preventDefault={onClickNext}
-            rel="prefetch">
+        <a href={nextPage} on:click|preventDefault={onClickNext} rel="prefetch">
             Next
         </a>
     {/if}
 </div>
 
-{#each pagesQueue as page}
-    <div id={page.slug} class={page.slug === pgId ? 'active' : 'queued'}>
+<div class="bgitems">
+    {#each Object.keys(pages) as p}
+        <div id="{`bg-${p}`}">
+            {#if pagesQueue.includes(p)}
+                <div transition:fade={{ delay: 0, duration: 800 }}>
+                    <BgMedia pageData={formatPageData(pages[p])} />
+                </div>
+            {/if}
+        </div>
+    {/each}
+</div>
+<Scrollmation
+    on:next={navNext}
+    on:prev={navPrev}
+    on:scroll={onScroll}
+    {isPrevNav}
+    {scrollToPosition}
+    {pgId}>
+    <div slot="fg">
         <svelte:component
-            this={templates[page.template]}
-            {...formatPageData(page)}
-            onNext={navNext}
-            onPrev={navPrev}
-            onHome={navHome}
-            {scrollToPosition}
-            {isPrevNav}
-            pgId={page.slug}
-            isActive={page.slug === pgId} />
+            this={templates[currentPage.template]}
+            pageData={formatPageData(currentPage)}
+            {scrollData}
+            isActive={true} />
     </div>
-{/each}
+</Scrollmation>

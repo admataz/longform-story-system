@@ -1,12 +1,18 @@
 <script>
-    export let chapter_number
-    export let text_title
-    export let text_subheading
-    export let text_intro
-    export let text_bodycopy
-    export let image
-    export let video
-    export let bg_opacity
+    export let pageData
+    export let scrollData
+    export let isActive
+
+    const {
+        chapter_number,
+        text_title,
+        text_subheading,
+        text_intro,
+        text_bodycopy,
+        image,
+        video,
+        bg_opacity
+    } = pageData
 </script>
 
 <style>

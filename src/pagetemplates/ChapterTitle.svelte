@@ -1,34 +1,8 @@
 <script>
-    import BgMedia from './BgMedia.svelte'
-    import Scrollmation from '../components/scrollmation.svelte'
-    import { cubicOut as easing } from 'svelte/easing'
-    export let chapter_number
-    export let text_title
-    export let text_subheading
-    export let text_intro
-    export let text_bodycopy
-    export let image
-    export let video
-    export let bg_opacity
-    export let pgId
+    export let pageData
+    export let scrollData
     export let isActive
-
-    let scrollInstance, scrollData
-    export let scrollToPosition
-    export let onNext = () => {}
-    export let onPrev = () => {}
-    export let onHome = () => {}
-
-    export let isPrevNav = false
-
-    function onScroll(evt) {
-        scrollData = evt.detail
-    }
-
-    $: bgOpacity = scrollData
-        ? scrollData.scrollPos / scrollData.endScrollPos
-        : bg_opacity
-    // $: console.log(scrollData)
+    const { chapter_number, text_title, text_intro } = pageData
 </script>
 
 <style>
@@ -57,36 +31,18 @@
     }
 </style>
 
-<Scrollmation
-    bind:this={scrollInstance}
-    startPos={10}
-    endPos={0}
-    duration={900}
-    {easing}
-    {isPrevNav}
-    {scrollToPosition}
-    on:next={onNext}
-    on:prev={onPrev}
-    on:home={onHome}
-    on:scroll={onScroll}>
-    <div class="contentpanel" slot="fg">
-        {#if chapter_number}
-            <div class="chapter-number">{chapter_number}</div>
-        {/if}
+<div class="contentpanel">
+    {#if chapter_number}
+        <div class="chapter-number">{chapter_number}</div>
+    {/if}
 
-        {#if text_title}
-            <h1>{text_title}</h1>
-        {/if}
+    {#if text_title}
+        <h1>{text_title}</h1>
+    {/if}
 
-        {#if text_intro}
-            <div class="text-intro">
-                {@html text_intro}
-            </div>
-        {/if}
-    </div>
-
-    <div slot="bg">
-        <BgMedia {image} {video} bg_opacity={1 - bgOpacity} />
-    </div>
-
-</Scrollmation>
+    {#if text_intro}
+        <div class="text-intro">
+            {@html text_intro}
+        </div>
+    {/if}
+</div>
