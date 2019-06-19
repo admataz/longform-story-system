@@ -1,33 +1,17 @@
 <script>
-    import BgMedia from './BgMedia.svelte'
-    import Scrollmation from '../components/scrollmation.svelte'
-    import { cubicOut as easing } from 'svelte/easing'
-    export let chapter_number
-    export let text_title
-    export let text_subheading
-    export let text_intro
-    export let text_bodycopy
-    export let image
-    export let video
-    export let bg_opacity
-    export let pgId
+    export let pageData
+    export let scrollData
     export let isActive
-
-    let scrollInstance, scrollData
-    export let scrollToPosition
-    export let onNext = () => {}
-    export let onPrev = () => {}
-    export let onHome = () => {}
-
-    export let isPrevNav = false
-
-    function onScroll(evt) {
-        scrollData = evt.detail
-    }
-
-    $: bgOpacity = scrollData
-        ? Math.abs(scrollData.toEndRatio - 0.4)
-        : bg_opacity
+    const {
+        chapter_number,
+        text_title,
+        text_subheading,
+        text_intro,
+        text_bodycopy,
+        image,
+        video,
+        bg_opacity,
+    } = pageData
 </script>
 
 <style>
@@ -51,44 +35,28 @@
     }
 </style>
 
-<Scrollmation
-    bind:this={scrollInstance}
-    startPos={10}
-    homePos={100}
-    endPos={0}
-    duration={900}
-    {easing}
-    {isPrevNav}
-    {scrollToPosition}
-    on:next={onNext}
-    on:prev={onPrev}
-    on:home={onHome}
-    on:scroll={onScroll}
-    {pgId}>
-    <div class="content" slot="fg">
-        {#if chapter_number}
-            <p>{chapter_number}</p>
-        {/if}
+<div class="content">
+    {#if chapter_number}
+        <p>{chapter_number}</p>
+    {/if}
 
-        {#if text_title}
-            <h1>{text_title}</h1>
-        {/if}
+    {#if text_title}
+        <h1>{text_title}</h1>
+    {/if}
 
-        {#if text_subheading}
-            <h2>{text_subheading}</h2>
-        {/if}
+    {#if text_subheading}
+        <h2>{text_subheading}</h2>
+    {/if}
 
-        {#if text_intro}
-            <div class="text-intro">
-                {@html text_intro}
-            </div>
-        {/if}
+    {#if text_intro}
+        <div class="text-intro">
+            {@html text_intro}
+        </div>
+    {/if}
 
-        {#if text_bodycopy}
-            <div class="text-bodycopy">
-                {@html text_bodycopy}
-            </div>
-        {/if}
-    </div>
-
-</Scrollmation>
+    {#if text_bodycopy}
+        <div class="text-bodycopy">
+            {@html text_bodycopy}
+        </div>
+    {/if}
+</div>

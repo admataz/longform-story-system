@@ -1,7 +1,45 @@
+<script context="module">
+    export const toHomeRatio = ({
+        homeScrollPos,
+        scrollPosPx,
+        startScrollPosPx,
+    }) => (homeScrollPos - scrollPosPx) / (homeScrollPos - startScrollPosPx)
+
+    export const toStartRatio = ({
+        homeScrollPos,
+        scrollPosPx,
+        startScrollPosPx,
+    }) => (scrollPosPx - startScrollPosPx) / (homeScrollPos - startScrollPosPx)
+
+    export const toEndRatio = ({
+        scrollPosPx,
+        endScrollPosPx,
+        homeScrollPos,
+    }) => (scrollPosPx - endScrollPosPx) / (homeScrollPos - endScrollPosPx)
+
+    export const toRangeRatio = ({
+        scrollPosPx,
+        endScrollPosPx,
+        startScrollPosPx,
+    }) => (scrollPosPx - endScrollPosPx) / (startScrollPosPx - endScrollPosPx)
+
+    export const fullRangePx = ({ endScrollPosPx, startScrollPosPx }) =>
+        endScrollPosPx - startScrollPosPx
+
+    export const toHomePx = ({ homeScrollPos, scrollPosPx }) =>
+        homeScrollPos - scrollPosPx
+
+    export const toEndPx = (endScrollPosPx, scrollPosPx) =>
+        endScrollPosPx - scrollPosPx
+
+    export const toStartPx = (startScrollPosPx, scrollPosPx) =>
+        startScrollPosPx - scrollPosPx
+</script>
+
 <script>
     import { afterUpdate, createEventDispatcher, onMount } from 'svelte'
     import { tweened } from 'svelte/motion'
-    import { cubicOut } from 'svelte/easing'
+    import { cubicOut, linear } from 'svelte/easing'
     const dispatch = createEventDispatcher()
 
     let contentHeight
@@ -11,14 +49,15 @@
     let scrollPosPx = 0
     let animatingScroll = false
     let endScrollPosPx
-    let startScrollPosPx
+    let startScrollPosPx = 0
     let prevScrollPosPx
     let targetScollPx
     let scrollDir
+    let targetPos = 'home'
 
-    export let startPos = 110 // px past the end
-    export let homePos = 80 //px from the top
-    export let endPos = 120 // px above the top
+    export let startPos = 10 // px past the end
+    export let homePos = 120 //px from the top
+    export let endPos = 10 // px above the top
     export let duration = 800
     export let easing = cubicOut
     export let scrollData = {}
@@ -35,10 +74,9 @@
         }
 
         let action = null
-
+        
         if (prevScrollPosPx !== scrollPosPx) {
             dispatch('scroll', scrollData)
-
             if (scrollPosPx === endScrollPosPx) {
                 action = 'next'
             }
@@ -75,6 +113,7 @@
         if (!destPos) {
             return
         }
+        targetPos = destPos
         switch (destPos) {
             case 'start':
                 targetScollPx = startScrollPosPx
@@ -113,7 +152,6 @@
 
     $: if (animatingScroll) container.scrollTop = $progress
     $: endScrollPosPx = containerHeight + contentHeight + endPos + startPos
-    $: startScrollPosPx = 0
     $: homeScrollPos = containerHeight - homePos + startPos
     $: scrollDir = scrollPosPx - prevScrollPosPx
     $: scrollToPos(scrollToPosition)
@@ -127,39 +165,16 @@
             startScrollPosPx,
             homeScrollPos,
             scrollDir,
-            toHomeRatio:
-                (homeScrollPos - scrollPosPx) /
-                (homeScrollPos - startScrollPosPx),
-            toStartRatio:
-                (scrollPosPx - startScrollPosPx) /
-                (homeScrollPos - startScrollPosPx),
-            toEndRatio:
-                (scrollPosPx - endScrollPosPx) /
-                (homeScrollPos - endScrollPosPx),
-            toRangeRatio:
-                (scrollPosPx - endScrollPosPx) /
-                (startScrollPosPx - endScrollPosPx),
-            fullRangePx: endScrollPosPx - startScrollPosPx,
-            toHomePx: homeScrollPos - scrollPosPx,
-            toEndPx: endScrollPosPx - scrollPosPx,
-            toStartPx: startScrollPosPx - scrollPosPx,
         }
     }
+
 </script>
 
 <style>
     .container {
-        width: 100vw;
-        height: 100vh;
+        width: 100%;
+        height: 100%;
         overflow: auto;
-    }
-    .bg {
-        position: fixed;
-        width: 100vw;
-        height: 100vh;
-        top: 0;
-        left: 0;
-        z-index: -1;
     }
 </style>
 
@@ -175,8 +190,5 @@
         style=" margin-top: {containerHeight + startPos}px; margin-bottom: {containerHeight + endPos}px
         ">
         <slot name="fg" />
-    </div>
-    <div class="bg">
-        <slot name="bg" />
     </div>
 </div>

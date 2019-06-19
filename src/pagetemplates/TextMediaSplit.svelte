@@ -1,29 +1,18 @@
 <script>
-    import BgMedia from './BgMedia.svelte'
-    import Scrollmation from '../components/scrollmation.svelte'
-    import { cubicOut as easing } from 'svelte/easing'
-    export let chapter_number
-    export let text_title
-    export let text_subheading
-    export let text_intro
-    export let text_bodycopy
-    export let image
-    export let video
-    export let bg_opacity
-    export let pgId
+    export let pageData
+    export let scrollData
     export let isActive
 
-    let scrollInstance, scrollData
-    export let scrollToPosition
-    export let onNext = () => {}
-    export let onPrev = () => {}
-    export let onHome = () => {}
-
-    export let isPrevNav = false
-
-    function onScroll(evt) {
-        console.log(evt.details)
-    }
+    const {
+        chapter_number,
+        text_title,
+        text_subheading,
+        text_intro,
+        text_bodycopy,
+        image,
+        video,
+        bg_opacity,
+    } = pageData
 </script>
 
 <style>
@@ -76,19 +65,8 @@
     }
 </style>
 
-<Scrollmation
-    bind:this={scrollInstance}
-    startPos={-400}
-    endPos={0}
-    duration={900}
-    {easing}
-    {isPrevNav}
-    {scrollToPosition}
-    on:next={onNext}
-    on:prev={onPrev}
-    on:home={onHome}
-    on:scroll={onScroll}>
-    <div class="content fg" slot="fg">
+<div>
+    <div class="content fg">
         {#if chapter_number}
             <p>{chapter_number}</p>
         {/if}
@@ -127,4 +105,4 @@
             </div>
         {/if}
     </div>
-</Scrollmation>
+</div>
