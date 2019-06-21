@@ -187,8 +187,7 @@
     <div
         class="fg"
         bind:clientHeight={contentHeight}
-        style=" margin-top: {containerHeight + startPos}px; margin-bottom: {containerHeight + endPos}px
-        ">
+        style="margin-top: {containerHeight + startPos}px; margin-bottom: {containerHeight + endPos}px">
         <slot name="fg" />
     </div>
 </div>

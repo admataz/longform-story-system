@@ -42,14 +42,15 @@
 
     .full-screen {
         width: 100%;
-        height: 100%;
+        height: 110vh;
         display: flex;
         flex-direction: column;
         justify-content: center;
+        /* border:1px solid #fff; */
     }
 
     video {
-        height: 100%;
+        height: 150%;
         opacity: 1;
     }
 </style>
@@ -57,12 +58,12 @@
 
 
 <div class="full-screen media-video">
-    <video autoplay={isActive} bind:paused={videoPaused} controls>
+    <!-- <video autoplay={isActive} bind:paused={videoPaused} controls>
         <source src={video} />
-    </video>
+    </video> -->
 
 </div>
-<!-- 
+
 
 <div class="mask" style="top:-1px; height: {maskHeight}%" />
-<div class="mask" style="bottom:-1px; height:{maskHeight}%" /> -->
+<div class="mask" style="bottom:-1px; height:{maskHeight}%" />
