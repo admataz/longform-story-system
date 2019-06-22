@@ -189,15 +189,13 @@
     {/if}
     </div>
 
-<div class="bgitems">
+<div class="bgitems" >
     {#each Object.keys(pages) as p}
             {#if pagesQueue.includes(p)}
-              <div class="bg-item" id="{`bg-${p}`}">
-                {#if p===pgId}
+              <div class="bg-item {p===pgId ? 'active' : ''}" id="{`bg-${p}`}">
                 <div transition:fade={{ delay: 0, duration: 800 }}>
-                    <BgMedia pageData={formatPageData(pages[p])} isActive={p===pgId}/>
+                    <BgMedia pageData={formatPageData(pages[p])} isActive={p===pgId} on:next={navNext} on:prev={navPrev}/>
                 </div>
-                {/if}
             </div>
           {/if}
     {/each}

@@ -1,9 +1,14 @@
 <script>
-    import { fade } from 'svelte/transition'
+    import {  createEventDispatcher } from 'svelte'
 
     export let pageData
     export let bgOpacity = 1
     export let isActive
+    export let videoPaused=true
+    export let  videoCurrentTime=0
+    export let  videoDuration=0
+    export let isVideoFinished=false
+
     const {
         chapter_number,
         text_title,
@@ -15,24 +20,47 @@
         bg_opacity,
         template
     } = pageData
+    const dispatch = createEventDispatcher()
 
     const isFullVideo = (template==='video-full')
+    
+    $: videoPaused = !isActive
+    // $: videoDuration && console.log(videoDuration-videoCurrentTime)
+    // $: console.log(isVideoFinished)
+    // $: console.log(isActive && isFullVideo && videoCurrentTime)
+    // $: (videoDuration ===videoCurrentTime ) && isActive && isFullVideo && dispatch('next')
+    function onWheel(evt){
+      if(evt.wheelDeltaY > 20){
+        if(isActive) dispatch('prev')
+      }
+      if(evt.wheelDeltaY < -20){
+        if(isActive) dispatch('next')
+      }
+    }
 </script>
 
 <style>
-    .media-image,
-    .media-video {
+    
+    .container{
         position: absolute;
         min-width: 100%;
         min-height: 100%;
         width: 100vw;
         height: 100vh;
+        overflow: hidden;
+        transition: 800ms;
+    }
+    .media-image,
+    .media-video {
         /* opacity: 0.5; */
         display: flex;
         align-content: stretch;
-        overflow: hidden;
         height: 100%;
         background-color: #000;
+        min-width: 100%;
+        min-height: 100%;
+        width: 100vw;
+        height: 100vh;
     }
 
     .media-image {
@@ -47,18 +75,33 @@
         position: absolute;
         top:0;
     }
-
+  
+  .active{opacity: 1}
+  .inactive{opacity: 0}
+  .fullVideo.active{
+    z-index: 2
+  }
 </style>
-
-
+<div class="container {isActive?'active':'inactive'} {isFullVideo? 'fullVideo': 'bgVideo'}" >
 <div class="media" style="opacity: {isFullVideo ? 1 :  bg_opacity || 0.5}">
     {#if pageData.image}
         <div class="media-image"  style="background-image:url({pageData.image})" />
     {:else if pageData.video}
-        <div class="media-video">
-            <video controls={isFullVideo} loop={!isFullVideo} autoplay  muted={!isFullVideo} class="{isFullVideo? 'fullVideo': 'bgVideo'}">
+        <div class="media-video" on:wheel={onWheel} >
+            <video 
+              preload="auto"
+              controls={isFullVideo} 
+              loop={!isFullVideo} 
+              autoplay={isActive}
+              bind:paused={videoPaused}
+              bind:currentTime={videoCurrentTime}
+              bind:duration={videoDuration}
+              muted={!isFullVideo} 
+              bind:ended={isVideoFinished}
+              >
               <source src={pageData.video} />
             </video>
         </div>
     {/if}
+</div>
 </div>
