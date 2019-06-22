@@ -97,7 +97,6 @@
               bind:currentTime={videoCurrentTime}
               bind:duration={videoDuration}
               muted={!isFullVideo} 
-              bind:ended={isVideoFinished}
               >
               <source src={pageData.video} />
             </video>
