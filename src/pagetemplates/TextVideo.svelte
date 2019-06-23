@@ -15,7 +15,6 @@
     } = pageData
 </script>
 
-
 <style>
     .content-row {
         display: flex;

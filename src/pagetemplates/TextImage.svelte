@@ -11,7 +11,7 @@
         text_bodycopy,
         image,
         video,
-        bg_opacity
+        bg_opacity,
     } = pageData
 </script>
 

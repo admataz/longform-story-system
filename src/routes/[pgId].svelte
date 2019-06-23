@@ -2,7 +2,6 @@
     export async function preload({ params }) {
         const res = await this.fetch(`pages.json`)
         const pgData = await res.json()
-
         const pages = pgData.reduce((acc, page, index, arr) => {
             const p = {
                 ...page,
@@ -14,8 +13,6 @@
             acc[page.slug] = p
             return acc
         }, {})
-        
-
         return {
             pages,
             pgId: params.pgId,
@@ -95,7 +92,6 @@
         if(!okToNav){
           return
         }
-
         isPrevNav = false
         scrollToPosition = null
         if (nextPage) {
@@ -139,14 +135,10 @@
     function onScroll(evt) {
         scrollData = evt.detail
     }
-
     $: currentPage = pages[pgId]
     $: nextPage = currentPage ? currentPage._nav.next : null
     $: prevPage = currentPage ? currentPage._nav.prev : null
     $: pagesQueue = [prevPage, nextPage, pgId]
-
-    // $: console.log({nextPage, prevPage, currentPage, pagesQueue})
-    // $: console.log(currentPage.template)
 </script>
 
 <style>
@@ -171,8 +163,6 @@
 
 
 <svelte:window on:keydown={onKeyDown} />
-
-
     <div class="wheel1">
       {#if prevPage}
         <a href={prevPage} on:click|preventDefault={onClickPrev} rel="prefetch">
@@ -200,6 +190,7 @@
           {/if}
     {/each}
 </div>
+
 <Scrollmation
     on:next={navNext}
     on:prev={navPrev}
@@ -208,6 +199,7 @@
     {isPrevNav}
     {scrollToPosition}
     {pgId}>
+ 
     <div slot="fg">
         <svelte:component
             this={templates[currentPage.template]}
@@ -215,4 +207,5 @@
             {scrollData}
             isActive={true} />
     </div>
+
 </Scrollmation>

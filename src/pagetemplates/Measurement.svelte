@@ -21,6 +21,8 @@
     $: progressBarStyle = scrollData
         ? `height: ${(1 - toEndRatio(scrollData)) * 100}%`
         : ''
+
+    $: maskHeight = scrollData ? Math.abs(toHomeRatio(scrollData)) * 50 : 100
 </script>
 
 <style>

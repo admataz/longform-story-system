@@ -54,18 +54,20 @@
     let targetScollPx
     let scrollDir
     let targetPos = 'home'
+    let loading = true
 
     export let startPos = 10 // px past the end
     export let homePos = 120 //px from the top
-    export let endPos = 10 // px above the top
+    export let endPos = 100 // px above the top
     export let duration = 800
     export let easing = cubicOut
     export let scrollData = {}
     export let isPrevNav = false
     export let scrollToPosition = null
+    export let jumpToPosition = null
     export let pgId
 
-    function onScroll(e) {
+    async function onScroll(e) {
         prevScrollPosPx = scrollPosPx
         scrollPosPx = e.target.scrollTop
 
@@ -78,7 +80,9 @@
         if (prevScrollPosPx !== scrollPosPx) {
             dispatch('scroll', scrollData)
             if (scrollPosPx === endScrollPosPx) {
+              loading = true
                 action = 'next'
+
             }
             if (scrollPosPx === startScrollPosPx) {
                 action = 'prev'
@@ -94,6 +98,7 @@
 
             if (!animatingScroll && action) {
                 dispatch(action, scrollData)
+
             }
         }
     }
@@ -109,12 +114,19 @@
         easing,
     })
 
+    export async function jumpToPos(destPos){
+      return await scrollToPos(destPos, false)
+    }
+
     export async function scrollToPos(destPos = 'home', anim = true) {
         if (!destPos) {
             return
         }
         targetPos = destPos
         switch (destPos) {
+            case 'offscreen':
+                targetScollPx = endScrollPosPx + 100
+                break
             case 'start':
                 targetScollPx = startScrollPosPx
                 break
@@ -141,13 +153,17 @@
     }
 
     async function initPos(p) {
-        if (isPrevNav) {
-            await scrollToPos('beforeEnd', false)
-        } else {
-            await scrollToPos('beforeStart', false)
-        }
-        animatingScroll = true
-        await scrollToPos('home')
+        setTimeout(async()=>{
+          if (isPrevNav) {
+              await scrollToPos('beforeEnd', false)
+          } else {
+              await scrollToPos('beforeStart', false)
+          }
+          animatingScroll = true
+          loading = false
+          await scrollToPos('home')
+        }, 200)
+        
     }
 
     $: if (animatingScroll) container.scrollTop = $progress
@@ -155,6 +171,7 @@
     $: homeScrollPos = containerHeight - homePos + startPos
     $: scrollDir = scrollPosPx - prevScrollPosPx
     $: scrollToPos(scrollToPosition)
+    $: jumpToPos(jumpToPosition)
     $: initPos(pgId)
     $: {
         scrollData = {
@@ -167,7 +184,6 @@
             scrollDir,
         }
     }
-
 </script>
 
 <style>
@@ -176,6 +192,7 @@
         height: 100%;
         overflow: auto;
     }
+
 </style>
 
 <div
@@ -183,11 +200,17 @@
     bind:this={container}
     bind:clientHeight={containerHeight}
     on:scroll={onScroll}
-    on:wheel={onWheel}>
+    on:wheel={onWheel}
+    style="opacity: {loading ? 0 : 1}"
+    >
+    {#if !loading}
     <div
         class="fg"
         bind:clientHeight={contentHeight}
         style="margin-top: {containerHeight + startPos}px; margin-bottom: {containerHeight + endPos}px">
         <slot name="fg" />
     </div>
+    {/if}
 </div>
+
+

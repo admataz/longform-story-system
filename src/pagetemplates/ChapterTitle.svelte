@@ -6,7 +6,7 @@
 </script>
 
 <style>
-    .contentpanel {
+    .content {
         padding: 0 120px;
     }
     .chapter-number {
@@ -31,7 +31,7 @@
     }
 </style>
 
-<div class="contentpanel">
+<div class="content">
     {#if chapter_number}
         <div class="chapter-number">{chapter_number}</div>
     {/if}

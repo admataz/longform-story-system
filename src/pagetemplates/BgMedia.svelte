@@ -30,11 +30,14 @@
     // $: console.log(isActive && isFullVideo && videoCurrentTime)
     // $: (videoDuration ===videoCurrentTime ) && isActive && isFullVideo && dispatch('next')
     function onWheel(evt){
+      if(!isActive || !isFullVideo){
+        return
+      }
       if(evt.wheelDeltaY > 20){
-        if(isActive) dispatch('prev')
+         dispatch('prev')
       }
       if(evt.wheelDeltaY < -20){
-        if(isActive) dispatch('next')
+         dispatch('next')
       }
     }
 </script>
