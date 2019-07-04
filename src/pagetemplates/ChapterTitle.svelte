@@ -17,7 +17,7 @@
     .text-intro {
         max-width: 60%;
         font-size: 16pt;
-        font-weight: 600;
+        font-weight: 300;
     }
     h1 {
         margin-top: 0;

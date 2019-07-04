@@ -44,6 +44,7 @@
     import TextVideo from '../pagetemplates/TextVideo.svelte'
     import Measurement from '../pagetemplates/Measurement.svelte'
     import Wheel from '../components/wheel.svelte'
+    import VideoInline from '../pagetemplates/VideoInline.svelte'
 
     export let pages, pagesObj, pgId, pgData, scrollToPos, isPrevNav
     let canNav = true
@@ -59,6 +60,7 @@
         'text-bg-media': TextBgMedia,
         'text-image': TextImage,
         'text-video': TextVideo,
+        'video-inline': VideoInline,
         measurement: Measurement,
     }
 
