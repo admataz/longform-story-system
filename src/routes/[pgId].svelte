@@ -1,20 +1,6 @@
 <script context="module">
     export async function preload({ params }) {
-        const res = await this.fetch(`pages.json`)
-        const pgData = await res.json()
-        const pages = pgData.reduce((acc, page, index, arr) => {
-            const p = {
-                ...page,
-                _nav: {
-                    prev: index ? arr[index - 1].slug : null,
-                    next: index + 1 < arr.length ? arr[index + 1].slug : null,
-                },
-            }
-            acc[page.slug] = p
-            return acc
-        }, {})
         return {
-            pages,
             pgId: params.pgId,
         }
     }
@@ -22,6 +8,7 @@
 
 
 <script>
+    import { getContext } from 'svelte';
     import { goto, prefetch } from '@sapper/app'
     import marked from 'marked'
     import { fade } from 'svelte/transition'
@@ -46,12 +33,14 @@
     import Wheel from '../components/wheel.svelte'
     import VideoInline from '../pagetemplates/VideoInline.svelte'
 
-    export let pages, pagesObj, pgId, pgData, scrollToPos, isPrevNav
+    const pages = getContext('pages')
+    export let pgId, isPrevNav
     let canNav = true
     let scrollToPosition = null
     let scrollData
     let lastPage = null
     let okToNav = false
+    let changeBg = true
 
     const templates = {
         'chapter-title': ChapterTitle,
@@ -90,7 +79,7 @@
         }
     }
 
-    async function navNext(e) {
+    function navNext(e) {
         if(!okToNav){
           return
         }
@@ -99,13 +88,14 @@
         if (nextPage) {
             lastPage = currentPage
             currentPage = pages[nextPage]
+            changeBg = shouldSwitchBg(lastPage, currentPage)
             prefetch(pages[nextPage]._nav.next)
             okToNav = false
             goto(nextPage)
         }
     }
 
-    async function navPrev(e) {
+    function navPrev(e) {
         if(!okToNav){
           return
         }
@@ -114,6 +104,7 @@
         if (prevPage) {
             lastPage = currentPage
             currentPage = pages[prevPage]
+            changeBg = shouldSwitchBg(lastPage, currentPage)
             prefetch(pages[prevPage]._nav.next)
             okToNav = false
             goto(prevPage)
@@ -137,10 +128,35 @@
     function onScroll(evt) {
         scrollData = evt.detail
     }
+
+    function shouldSwitchBg(last, curr){
+      if(!last){
+        return true
+      }
+      if(last.template !== curr.template){
+        return true
+      }
+
+      if(
+        lastPage.video && currentPage.video && lastPage.video===currentPage.video ||
+        lastPage.image && currentPage.image && lastPage.image===currentPage.image
+      ){
+        return false
+      }
+
+      return true
+
+
+
+    }
+
+
     $: currentPage = pages[pgId]
     $: nextPage = currentPage ? currentPage._nav.next : null
     $: prevPage = currentPage ? currentPage._nav.prev : null
-    $: pagesQueue = [prevPage, nextPage, pgId]
+    $: pagesQueue = [pgId]
+    // $: changeBg = shouldSwitchBg(lastPage, currentPage)
+    // $: console.log(changeBg)
 </script>
 
 <style>
@@ -179,18 +195,28 @@
              <Wheel {scrollData} />
         </a>
     {/if}
+    {changeBg}
     </div>
 
 <div class="bgitems" >
-    {#each Object.keys(pages) as p}
+    {#if !shouldSwitchBg(lastPage, currentPage)}
+      <div transition:fade={{ delay: 0, duration: 800 }}>
+      <BgMedia pageData={formatPageData(pages[pgId])} isActive={true} on:next={navNext} on:prev={navPrev}/>
+      </div>
+    {:else}
+      {#each Object.keys(pages) as p}
             {#if pagesQueue.includes(p)}
-              <div class="bg-item {p===pgId ? 'active' : ''}" id="{`bg-${p}`}">
+              <div class="bg-item {p===pgId ? 'active' : ''}" id="{`bg-${p}`}"  transition:fade={{ delay: 0, duration: 800 }}>
                 <div transition:fade={{ delay: 0, duration: 800 }}>
                     <BgMedia pageData={formatPageData(pages[p])} isActive={p===pgId} on:next={navNext} on:prev={navPrev}/>
                 </div>
             </div>
           {/if}
     {/each}
+
+    {/if}
+
+    
 </div>
 
 <Scrollmation
