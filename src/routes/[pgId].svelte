@@ -1,20 +1,6 @@
 <script context="module">
     export async function preload({ params }) {
-        const res = await this.fetch(`pages.json`)
-        const pgData = await res.json()
-        const pages = pgData.reduce((acc, page, index, arr) => {
-            const p = {
-                ...page,
-                _nav: {
-                    prev: index ? arr[index - 1].slug : null,
-                    next: index + 1 < arr.length ? arr[index + 1].slug : null,
-                },
-            }
-            acc[page.slug] = p
-            return acc
-        }, {})
         return {
-            pages,
             pgId: params.pgId,
         }
     }
@@ -22,6 +8,7 @@
 
 
 <script>
+    import { getContext } from 'svelte';
     import { goto, prefetch } from '@sapper/app'
     import marked from 'marked'
     import { fade } from 'svelte/transition'
@@ -46,7 +33,8 @@
     import Wheel from '../components/wheel.svelte'
     import VideoInline from '../pagetemplates/VideoInline.svelte'
 
-    export let pages, pagesObj, pgId, pgData, scrollToPos, isPrevNav
+    const pages = getContext('pages')
+    export let pgId, isPrevNav
     let canNav = true
     let scrollToPosition = null
     let scrollData
@@ -140,7 +128,10 @@
     $: currentPage = pages[pgId]
     $: nextPage = currentPage ? currentPage._nav.next : null
     $: prevPage = currentPage ? currentPage._nav.prev : null
-    $: pagesQueue = [prevPage, nextPage, pgId]
+    $: pagesQueue = [pgId]
+    // $: changeBg = shouldSwitchBg(lastPage, currentPage)
+    // $: console.log(changeBg)
+    $: currPageContent = formatPageData(pages[pgId])
 </script>
 
 <style>
@@ -193,6 +184,8 @@
     {/each}
 </div>
 
+      {#each Object.keys(pages) as p}
+            {#if pagesQueue.includes(p)}
 <Scrollmation
     on:next={navNext}
     on:prev={navPrev}
@@ -205,9 +198,12 @@
     <div slot="fg">
         <svelte:component
             this={templates[currentPage.template]}
-            pageData={formatPageData(currentPage)}
+            pageData={currPageContent}
             {scrollData}
             isActive={true} />
     </div>
 
 </Scrollmation>
+    {/if}
+    {/each}
+
