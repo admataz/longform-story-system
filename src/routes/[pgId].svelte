@@ -157,7 +157,7 @@
 
 <svelte:window on:keydown={onKeyDown} />
     <div class="wheel1">
-      {#if prevPage}
+      {#if false}
         <a href={prevPage} on:click|preventDefault={onClickPrev} rel="prefetch">
              <Wheel {scrollData} />
         </a>
@@ -165,7 +165,7 @@
     </div>
     
     <div class="wheel2">
-      {#if nextPage}
+      {#if false}
         <a href={nextPage} on:click|preventDefault={onClickNext} rel="prefetch">
              <Wheel {scrollData} />
         </a>

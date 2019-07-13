@@ -25,7 +25,7 @@
 
 <script>
   import { setContext } from 'svelte';
-  // import Nav from '../components/navigation.svelte'
+  import Nav from '../components/navigation.svelte'
 
   export let pages, pgData
   export let segment
@@ -34,7 +34,7 @@
 </script>
 
 
-<!-- <Nav pgData={pgData} {segment} /> -->
+<Nav pgData={pgData} {segment} />
 <main>
-    <slot />
+    <slot></slot>
 </main>
