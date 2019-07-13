@@ -43,7 +43,7 @@
         {/if}
 
         {#if text_subheading}
-            <h2>{text_subheading}</h2>
+            <h2 class="subheading">{text_subheading}</h2>
         {/if}
     </div>
 
