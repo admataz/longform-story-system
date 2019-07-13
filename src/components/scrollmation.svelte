@@ -76,13 +76,12 @@
         }
 
         let action = null
-        
+
         if (prevScrollPosPx !== scrollPosPx) {
             dispatch('scroll', scrollData)
             if (scrollPosPx === endScrollPosPx) {
-              loading = true
+                loading = true
                 action = 'next'
-
             }
             if (scrollPosPx === startScrollPosPx) {
                 action = 'prev'
@@ -98,7 +97,6 @@
 
             if (!animatingScroll && action) {
                 dispatch(action, scrollData)
-
             }
         }
     }
@@ -114,8 +112,8 @@
         easing,
     })
 
-    export async function jumpToPos(destPos){
-      return await scrollToPos(destPos, false)
+    export async function jumpToPos(destPos) {
+        return await scrollToPos(destPos, false)
     }
 
     export async function scrollToPos(destPos = 'home', anim = true) {
@@ -153,17 +151,16 @@
     }
 
     async function initPos(p) {
-        setTimeout(async()=>{
-          if (isPrevNav) {
-              await scrollToPos('beforeEnd', false)
-          } else {
-              await scrollToPos('beforeStart', false)
-          }
-          animatingScroll = true
-          loading = false
-          await scrollToPos('home')
+        setTimeout(async () => {
+            if (isPrevNav) {
+                await scrollToPos('beforeEnd', false)
+            } else {
+                await scrollToPos('beforeStart', false)
+            }
+            animatingScroll = true
+            loading = false
+            await scrollToPos('home')
         }, 200)
-        
     }
 
     $: if (animatingScroll) container.scrollTop = $progress
@@ -192,7 +189,6 @@
         height: 100%;
         overflow: auto;
     }
-
 </style>
 
 <div
@@ -201,16 +197,13 @@
     bind:clientHeight={containerHeight}
     on:scroll={onScroll}
     on:wheel={onWheel}
-    style="opacity: {loading ? 0 : 1}"
-    >
+    style="opacity: {loading ? 0 : 1}">
     {#if !loading}
-    <div
-        class="fg"
-        bind:clientHeight={contentHeight}
-        style="margin-top: {containerHeight + startPos}px; margin-bottom: {containerHeight + endPos}px">
-        <slot name="fg" />
-    </div>
+        <div
+            class="fg"
+            bind:clientHeight={contentHeight}
+            style="margin-top: {containerHeight + startPos}px; margin-bottom: {containerHeight + endPos}px">
+            <slot name="fg" />
+        </div>
     {/if}
 </div>
-
-
