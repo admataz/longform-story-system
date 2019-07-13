@@ -10,7 +10,7 @@
         padding: 0 120px;
     }
     .chapter-number {
-        font-size: 12pt;
+        font-size: 24px;
         color: #ffa52a;
     }
 

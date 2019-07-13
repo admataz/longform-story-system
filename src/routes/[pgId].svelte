@@ -53,6 +53,7 @@
         measurement: Measurement,
     }
 
+
     function formatPageData(page) {
         if (!page) {
             return null
@@ -143,11 +144,7 @@
       ){
         return false
       }
-
       return true
-
-
-
     }
 
 
@@ -157,6 +154,7 @@
     $: pagesQueue = [pgId]
     // $: changeBg = shouldSwitchBg(lastPage, currentPage)
     // $: console.log(changeBg)
+    $: currPageContent = formatPageData(pages[pgId])
 </script>
 
 <style>
@@ -182,7 +180,7 @@
 
 <svelte:window on:keydown={onKeyDown} />
     <div class="wheel1">
-      {#if prevPage}
+      {#if false}
         <a href={prevPage} on:click|preventDefault={onClickPrev} rel="prefetch">
              <Wheel {scrollData} />
         </a>
@@ -190,12 +188,11 @@
     </div>
     
     <div class="wheel2">
-      {#if nextPage}
+      {#if false}
         <a href={nextPage} on:click|preventDefault={onClickNext} rel="prefetch">
              <Wheel {scrollData} />
         </a>
     {/if}
-    {changeBg}
     </div>
 
 <div class="bgitems" >
@@ -219,6 +216,8 @@
     
 </div>
 
+      {#each Object.keys(pages) as p}
+            {#if pagesQueue.includes(p)}
 <Scrollmation
     on:next={navNext}
     on:prev={navPrev}
@@ -231,9 +230,12 @@
     <div slot="fg">
         <svelte:component
             this={templates[currentPage.template]}
-            pageData={formatPageData(currentPage)}
+            pageData={currPageContent}
             {scrollData}
             isActive={true} />
     </div>
 
 </Scrollmation>
+    {/if}
+    {/each}
+

@@ -14,8 +14,7 @@ body {
 	font-family: urbane, sans-serif;
 	font-weight: 300;
 	font-style: normal;
-	font-size: 16pt;
-	line-height: 1.5;
+	font-size: 18px;
 	background: #1E1E23;
 	color: #fff;
 }
@@ -28,8 +27,12 @@ h2, h3, h4, h5, h6 {
 }
 
 h1 {
-	font-size: 2em;
+  font-size: 52px;
 	color: #fff
+}
+
+h2.subheading{
+  font-size: 24px
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -57,7 +60,8 @@ code {
 }
 
 .text-bodycopy{
-	font-weight: 300;
+  font-weight: 300;
+  font-size: 18px;
 }
 
 .text-bodycopy img{

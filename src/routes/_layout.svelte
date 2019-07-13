@@ -36,5 +36,5 @@
 
 <Nav pgData={pgData} {segment} />
 <main>
-    <slot {pages} itest={"abc123"}></slot>
+    <slot></slot>
 </main>

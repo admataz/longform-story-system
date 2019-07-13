@@ -1,17 +1,77 @@
 <script>
+    import { slide } from 'svelte/transition'
     export let pgData, segment
     const chapterTitles = pgData.filter(p => p.template === 'chapter-title')
+    let preview = null
+    let previewTop = -1000
+    let previewRight = -1000
 
+    function showPreview(evt, pg){
+      preview=pg;
+      previewTop=evt.clientY-evt.clientY/8
+      previewRight=100
+    }
     $: currIndex = pgData.map(p=>p.slug).indexOf(segment)
-    $: console.log(currIndex)
-    $: console.log(segment)
+
 </script>
+
+
+{#if preview}
+<div class="nav-popup-preview" style="top:{previewTop}px; right:{previewRight}px" transition:slide>
+  {#if preview.chapter_number}
+        <div class="preview-chapter-number">{preview.chapter_number}</div>
+    {/if}
+
+    {#if preview.text_title}
+        <div class="preview-chapter-title">{preview.text_title}</div>
+    {/if}
+
+    {#if preview.text_intro}
+        <div class="preview-text-intro">
+            {@html preview.text_intro}
+        </div>
+    {/if}
+</div>
+{/if}
+
+<div class="navigation">
+    {#each chapterTitles as pg}
+        <div class="nav-item {pg.index <= currIndex && 'activated'}" >
+            <svg class="nav-line" viewBox="0 0 100 100">
+                <line
+                    x1="50%"
+                    y1="0"
+                    x2="50%"
+                    y2="100%"
+                     />
+            </svg>
+
+            <a href="/{pg.slug}" 
+            on:mouseover={(evt) => {showPreview(evt, pg)}}
+            
+            on:mouseout={(evt)=>{
+              preview = null
+            }}
+            >
+                <svg class="nav-circle" viewBox="0 0 100 100">
+                    <circle cx="50%" cy="50%" r="50" />
+                </svg>
+
+            </a>
+
+            
+
+        </div>
+    {/each}
+</div>
+
+
 
 <style>
     .navigation {
         position: absolute;
         right: 0;
-        z-index: 3000;
+        z-index: 20;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -72,29 +132,26 @@
     .nav-item:first-child .nav-line{
       display: none;
     }
+
+
+    .nav-popup-preview{
+      position: absolute;
+      z-index: 31;
+      width: 300px;
+      background-color: #fff;
+      color: #666;
+      padding: 20px;
+      border-left: 8px solid  #FFA52A;
+      font-size: 14px;
+    }
+
+    .preview-chapter-number{
+      font-weight: 800;
+      font-size: 14px;
+    }
+    .preview-text-intro{
+      margin-top: 20px;
+    }
 </style>
 
-<div class="navigation">
-    {#each chapterTitles as pg}
-        <div class="nav-item {pg.index <= currIndex && 'activated'}" >
-            <svg class="nav-line" viewBox="0 0 100 100">
-                <line
-                    x1="50%"
-                    y1="0"
-                    x2="50%"
-                    y2="100%"
-                     />
-            </svg>
 
-            <a href="/{pg.slug}">
-                <svg class="nav-circle" viewBox="0 0 100 100">
-                    <circle cx="50%" cy="50%" r="50" />
-                </svg>
-
-            </a>
-
-            
-
-        </div>
-    {/each}
-</div>
