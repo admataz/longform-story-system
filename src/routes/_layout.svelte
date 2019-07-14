@@ -35,7 +35,15 @@
     setContext('pages', pages)
 </script>
 
-<Nav {pgData} {segment} on:clickNav={onClickNav} />
-<main>
-    <slot />
-</main>
+<style>
+main {
+  display:flex;
+  
+}
+
+</style>
+
+    <main>
+        <slot />
+        <Nav {pgData} {segment} on:clickNav={onClickNav} />
+    </main>

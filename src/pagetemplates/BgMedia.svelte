@@ -81,9 +81,29 @@
   
   .active{opacity: 1}
   .inactive{opacity: 0}
+  
+  .fullVideo {
+  }
   .fullVideo.active{
     z-index: 2
   }
+
+  .fullVideo .media-video {
+    position: relative;
+    width: 100%;
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .fullVideo video{
+     max-width: calc(100% - 100px);
+     max-height: 100%;
+     min-height: auto;
+     min-width: auto;
+     position: relative;
+  }
+
 </style>
 <div class="container {isActive?'active':'inactive'} {isFullVideo? 'fullVideo': 'bgVideo'}" >
 <div class="media" style="opacity: {isFullVideo ? 1 :  bg_opacity || 0.5}">
