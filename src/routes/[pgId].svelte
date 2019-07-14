@@ -11,6 +11,8 @@
     import { goto, prefetch } from '@sapper/app'
     import marked from 'marked'
     import { fade } from 'svelte/transition'
+
+    import { clickNavTo } from '../store/'
     import Scrollmation, {
         toHomeRatio,
         toStartRatio,
@@ -39,6 +41,7 @@
     let scrollData
     let lastPage = null
     let okToNav = false
+    let navTo = null
 
     const templates = {
         'chapter-title': ChapterTitle,
@@ -69,41 +72,48 @@
     function onKeyDown({ key }) {
         if (key === 'ArrowRight' || key === 'ArrowDown') {
             okToNav = true
+            navTo = nextPage
             scrollTo('end')
         }
         if (key === 'ArrowLeft' || key === 'ArrowUp') {
             okToNav = true
+            navTo = prevPage
             scrollTo('start')
         }
     }
 
-    async function navNext(e) {
+    function gotoPage(pg) {
+        lastPage = currentPage
+        currentPage = pages[pg]
+        okToNav = false
+        goto(pg)
+        navTo = null
+        $clickNavTo = null
+    }
+
+    function navNext() {
         if (!okToNav) {
             return
         }
         isPrevNav = false
         scrollToPosition = null
-        if (nextPage) {
-            lastPage = currentPage
-            currentPage = pages[nextPage]
-            prefetch(pages[nextPage]._nav.next)
-            okToNav = false
-            goto(nextPage)
+        if (navTo) {
+            gotoPage(navTo)
+        } else if (nextPage) {
+            gotoPage(nextPage)
         }
     }
 
-    async function navPrev(e) {
+    function navPrev() {
         if (!okToNav) {
             return
         }
-        isPrevNav = true
+        isPrevNav = !!$clickNavTo ? false : true
         scrollToPosition = null
-        if (prevPage) {
-            lastPage = currentPage
-            currentPage = pages[prevPage]
-            prefetch(pages[prevPage]._nav.next)
-            okToNav = false
-            goto(prevPage)
+        if (navTo) {
+            gotoPage(navTo)
+        } else if (prevPage) {
+            gotoPage(prevPage)
         }
     }
 
@@ -121,6 +131,12 @@
         scrollTo('end')
     }
 
+    function onClickNav(to) {
+        okToNav = true
+        navTo = to
+        scrollTo('start')
+    }
+
     function onScroll(evt) {
         scrollData = evt.detail
     }
@@ -131,6 +147,8 @@
     // $: changeBg = shouldSwitchBg(lastPage, currentPage)
     // $: console.log(changeBg)
     $: currPageContent = formatPageData(pages[pgId])
+    // $: nextNav = $clickNavTo
+    $: doClick = $clickNavTo ? onClickNav($clickNavTo): null
 </script>
 
 <style>
@@ -146,7 +164,7 @@
 <div class="bgitems">
     {#each Object.keys(pages) as p}
         {#if pagesQueue.includes(p)}
-            <div class="bg-item {p === pgId ? 'active' : ''}" id="{`bg-${p}`}">
+            <div class="bg-item {p === pgId ? 'active' : ''}" id={`bg-${p}`}>
                 <div transition:fade={{ delay: 0, duration: 800 }}>
                     <BgMedia
                         pageData={formatPageData(pages[p])}
@@ -167,7 +185,7 @@
     {isPrevNav}
     {scrollToPosition}
     {pgId}>
-<!-- TODO: investigate useing let: to pass props values back up from the slot component -->
+    <!-- TODO: investigate useing let: to pass props values back up from the slot component -->
     <div slot="fg">
         {#each Object.keys(pages) as p}
             {#if pagesQueue.includes(p)}
