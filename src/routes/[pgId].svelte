@@ -161,10 +161,22 @@
 
 <svelte:window on:keydown={onKeyDown} />
 
+<div class="wheel1">
+    <a href={prevPage} on:click|preventDefault={onClickPrev} rel="prefetch">
+          
+    </a>
+</div>
+
+<div class="wheel2">
+    <a href={nextPage} on:click|preventDefault={onClickNext} rel="prefetch">
+         
+    </a>
+</div>
+
 <div class="bgitems">
     {#each Object.keys(pages) as p}
         {#if pagesQueue.includes(p)}
-            <div class="bg-item {p === pgId ? 'active' : ''}" id={`bg-${p}`}>
+            <div class="bg-item {p === pgId ? 'active' : ''}" id="{`bg-${p}`}">
                 <div transition:fade={{ delay: 0, duration: 800 }}>
                     <BgMedia
                         pageData={formatPageData(pages[p])}

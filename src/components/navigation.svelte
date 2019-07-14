@@ -1,18 +1,20 @@
 <script>
     import { slide } from 'svelte/transition'
-    import {createEventDispatcher} from 'svelte'
+    import { createEventDispatcher } from 'svelte'
 
     export let pgData, segment
     const chapterTitles = pgData
-      .filter(p => p.template === 'chapter-title')
-      .map((p, i, a) => ({...p, children:  a[i+1] ? a[i+1].index-p.index: a.length-p.index  }))
+        .filter(p => p.template === 'chapter-title')
+        .map((p, i, a) => ({
+            ...p,
+            children: a[i + 1] ? a[i + 1].index - p.index : a.length - p.index,
+        }))
 
     let preview = null
     let previewTop = -1000
     let previewRight = -1000
-    
-    const dispatch = createEventDispatcher()
 
+    const dispatch = createEventDispatcher()
 
     function showPreview(evt, pg) {
         preview = pg
@@ -20,29 +22,26 @@
         previewRight = 100
     }
 
-    function onClickItem(slug){
-      dispatch('clickNav', slug)
+    function onClickItem(slug) {
+        dispatch('clickNav', slug)
     }
 
-    function calcChapterProgress(chapterIndex, childCount, currChildIndex){
-      if(currChildIndex > chapterIndex + childCount){
-        return 100
-      }
-      if(currChildIndex <= chapterIndex){
-        return 0
-      }
+    function calcChapterProgress(chapterIndex, childCount, currChildIndex) {
+        if (currChildIndex > chapterIndex + childCount) {
+            return 100
+        }
+        if (currChildIndex <= chapterIndex) {
+            return 0
+        }
 
-      const currChapterPage = currChildIndex - chapterIndex
+        const currChapterPage = currChildIndex - chapterIndex
 
-      return Math.ceil(currChapterPage/childCount * 100)
-
-
-
+        return Math.ceil((currChapterPage / childCount) * 100)
     }
 
     $: currIndex = pgData.map(p => p.slug).indexOf(segment)
     $: currentPageIndex = pgData.findIndex(p => p.slug === segment)
-    $: console.log({currentPageIndex})
+    // $: console.log({ currentPageIndex })
 </script>
 
 <style>
@@ -79,7 +78,9 @@
         display: block;
         flex-shrink: 1;
     }
-
+    .nav-circle span{
+      display:none;
+    }
 
     .nav-line {
         display: block;
@@ -90,20 +91,19 @@
         background-color: #fff;
     }
 
-
-
-    .nav-circle.activated, .nav-line-progress {
+    .nav-circle.activated,
+    .nav-line-progress {
         background-color: #ffa52a;
     }
 
-    .nav-item:first-child{
-      justify-content: flex-end;
+    .nav-item:first-child {
+        justify-content: flex-end;
     }
 
-    .nav-item:first-child, .nav-item:nth-last-child(2){
-      flex-grow:5
+    .nav-item:first-child,
+    .nav-item:nth-last-child(2) {
+        flex-grow: 5;
     }
-
 
     .nav-item:last-child .nav-line {
         display: none;
@@ -154,24 +154,26 @@
 
     {#each chapterTitles as pg}
         <div class="nav-item">
-            
+
             <a
                 class="nav-circle {pg.index <= currIndex && 'activated'}"
                 href="/{pg.slug}"
-                on:click|preventDefault="{()=>{
-                  onClickItem(pg.slug)
-                }
-                }"
+                on:click|preventDefault="{() => {
+                    onClickItem(pg.slug)
+                }}"
                 on:mouseover="{evt => {
                     showPreview(evt, pg)
                 }}"
                 on:mouseout="{evt => {
                     preview = null
-                }}">
-            </a>
-            <div class="nav-line"><div class="nav-line-progress"
-              style="height:   { calcChapterProgress( pg.index,  pg.children, currentPageIndex )}%"
-            ></div></div>
+                }}" >
+                  <span>{pg.text_title}</span>
+                </a>
+            <div class="nav-line">
+                <div
+                    class="nav-line-progress"
+                    style="height: {calcChapterProgress(pg.index, pg.children, currentPageIndex)}%" />
+            </div>
         </div>
     {/each}
 </div>
