@@ -3,7 +3,10 @@
     import {createEventDispatcher} from 'svelte'
 
     export let pgData, segment
-    const chapterTitles = pgData.filter(p => p.template === 'chapter-title')
+    const chapterTitles = pgData
+      .filter(p => p.template === 'chapter-title')
+      .map((p, i, a) => ({...p, children:  a[i+1] ? a[i+1].index-p.index: a.length-p.index  }))
+
     let preview = null
     let previewTop = -1000
     let previewRight = -1000
@@ -21,7 +24,25 @@
       dispatch('clickNav', slug)
     }
 
+    function calcChapterProgress(chapterIndex, childCount, currChildIndex){
+      if(currChildIndex > chapterIndex + childCount){
+        return 100
+      }
+      if(currChildIndex <= chapterIndex){
+        return 0
+      }
+
+      const currChapterPage = currChildIndex - chapterIndex
+
+      return Math.ceil(currChapterPage/childCount * 100)
+
+
+
+    }
+
     $: currIndex = pgData.map(p => p.slug).indexOf(segment)
+    $: currentPageIndex = pgData.findIndex(p => p.slug === segment)
+    $: console.log({currentPageIndex})
 </script>
 
 <style>
@@ -51,42 +72,40 @@
     }
 
     .nav-circle {
-        fill: #fff;
+        background-color: #fff;
+        border-radius: 100%;
         height: 24px;
         width: 24px;
         display: block;
         flex-shrink: 1;
     }
+
+
     .nav-line {
         display: block;
         flex-grow: 1;
-        stroke-width: 4px;
+        width: 4px;
         padding: 0;
-        height: 60%;
-        stroke: #fff;
+        margin: 10px 0;
+        background-color: #fff;
     }
 
-    .nav-item.activated .nav-line {
-        stroke: #ffa52a;
+
+
+    .nav-circle.activated, .nav-line-progress {
+        background-color: #ffa52a;
     }
 
-    .nav-item.activated .nav-circle {
-        fill: #ffa52a;
+    .nav-item:first-child{
+      justify-content: flex-end;
     }
 
-    .nav-item:first-child {
-        flex-shrink: 1;
-        flex-grow: 1;
+    .nav-item:first-child, .nav-item:nth-last-child(2){
+      flex-grow:5
     }
 
-    .nav-item:last-child {
-        flex-shrink: 1;
-        flex-grow: 1;
-        display: flex;
-        flex-direction: column;
-    }
 
-    .nav-item:first-child .nav-line {
+    .nav-item:last-child .nav-line {
         display: none;
     }
 
@@ -134,12 +153,10 @@
 <div class="navigation">
 
     {#each chapterTitles as pg}
-        <div class="nav-item {pg.index <= currIndex && 'activated'}">
-            <!-- <svg class="nav-line" viewBox="0 0 100 100">
-                <line x1="50%" y1="0" x2="50%" y2="100%" />
-            </svg> -->
-
+        <div class="nav-item">
+            
             <a
+                class="nav-circle {pg.index <= currIndex && 'activated'}"
                 href="/{pg.slug}"
                 on:click|preventDefault="{()=>{
                   onClickItem(pg.slug)
@@ -151,13 +168,10 @@
                 on:mouseout="{evt => {
                     preview = null
                 }}">
-                [0]
-                <!-- <svg class="nav-circle" viewBox="0 0 100 100">
-                    <circle cx="50%" cy="50%" r="50" />
-                </svg> -->
-
             </a>
-
+            <div class="nav-line"><div class="nav-line-progress"
+              style="height:   { calcChapterProgress( pg.index,  pg.children, currentPageIndex )}%"
+            ></div></div>
         </div>
     {/each}
 </div>
