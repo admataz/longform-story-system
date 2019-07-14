@@ -189,6 +189,9 @@
         height: 100%;
         overflow: auto;
     }
+    .scroll-spacer{
+      height: 1px;
+    }
 </style>
 
 <div
@@ -204,6 +207,8 @@
             bind:clientHeight={contentHeight}
             style="margin-top: {containerHeight + startPos}px; margin-bottom: {containerHeight + endPos}px">
             <slot name="fg" />
+            <div class="scroll-spacer">&nbsp</div>
+
         </div>
     {/if}
 </div>
