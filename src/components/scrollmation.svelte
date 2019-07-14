@@ -188,9 +188,19 @@
         width: 100%;
         height: 100%;
         overflow: auto;
+        scrollbar-width: none;
+        overscroll-behavior: none;
+    }
+    .container::-webkit-scrollbar {
+      display: none;
     }
     .scroll-spacer{
       height: 1px;
+    }
+
+    .fg{
+      width: 100%;
+      padding-right: 65px;
     }
 </style>
 

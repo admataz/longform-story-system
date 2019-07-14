@@ -16,7 +16,10 @@ body {
 	font-style: normal;
 	font-size: 18px;
 	background: #1E1E23;
-	color: #fff;
+  color: #fff;
+  scrollbar-width: none;
+  overscroll-behavior: none;
+  overflow: hidden;
 }
 
 

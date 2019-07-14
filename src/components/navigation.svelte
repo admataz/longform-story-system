@@ -2,6 +2,12 @@
     import { slide } from 'svelte/transition'
     import { createEventDispatcher } from 'svelte'
 
+    import FbIcon from '../gfx/icons/fb.svelte'
+    import TwitterIcon from '../gfx/icons/twitter.svelte'
+    import DocIcon from '../gfx/icons/document.svelte'
+    import ShareIcon from '../gfx/icons/share.svelte'
+    import EmailIcon from '../gfx/icons/email.svelte'
+
     export let pgData, segment
     const chapterTitles = pgData
         .filter(p => p.template === 'chapter-title')
@@ -14,12 +20,26 @@
     let previewTop = -1000
     let previewRight = -1000
 
+    let shareTop = -1000
+    let shareRight = -1000
+
+    let showSharePanel = false
+
     const dispatch = createEventDispatcher()
 
     function showPreview(evt, pg) {
         preview = pg
-        previewTop = evt.clientY - evt.clientY / 8
-        previewRight = 100
+        previewTop = evt.currentTarget.offsetTop - 25
+        previewRight = 50
+    }
+
+    function toggleSharePanel(evt, pg) {
+        showSharePanel = !showSharePanel
+
+        if (showSharePanel) {
+            shareTop = evt.currentTarget.offsetTop - 25
+            shareRight = 48
+        }
     }
 
     function onClickItem(slug) {
@@ -45,9 +65,8 @@
 </script>
 
 <style>
-
-    .nav-container{
-       position: absolute;
+    .nav-container {
+        position: absolute;
         right: 0;
         z-index: 20;
         width: 60px;
@@ -55,22 +74,26 @@
         display: flex;
         flex-direction: column;
         background-color: rgba(0, 0, 0, 0.6);
-        text-align:center;
+        text-align: center;
         font-size: 14px;
-        color: #666;
+        color: #fff;
+        flex-basis: 100%;
+        padding: 20px 0;
     }
 
-    .nav-heading{
-      flex-flow: 1;
+    .nav-heading {
+        flex-grow: 1;
+        flex-direction: column;
+        display: flex;
+        justify-content: flex-end;
     }
 
     .navigation {
-       
+        margin: 10px 0;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        flex-grow: 2;
-       
+        flex-grow: 20;
     }
 
     .nav-item {
@@ -93,8 +116,8 @@
         display: block;
         flex-shrink: 1;
     }
-    .nav-circle span{
-      display:none;
+    .nav-circle span {
+        display: none;
     }
 
     .nav-line {
@@ -118,28 +141,29 @@
     .nav-item:first-child,
     .nav-item:nth-last-child(2) {
         flex-grow: 5;
-
     }
 
-     .nav-item:last-child{
-       flex-grow: 1;
-      justify-content: flex-start;
-     }
-    .nav-item:first-child .nav-line{
-      margin-top:0;
-
+    .nav-item:last-child {
+        flex-grow: 1;
+        justify-content: flex-start;
+    }
+    .nav-item:first-child .nav-line {
+        margin-top: 0;
     }
     .nav-item:nth-last-child(2) .nav-line {
-      margin-bottom:0;
+        margin-bottom: 0;
     }
     .nav-item:last-child .nav-line {
         display: none;
-        margin:0;
+        margin: 0;
     }
-
-    .nav-popup-preview {
+    .nav-popup-wrapper {
+        display: flex;
+        flex-direction: row;
         position: absolute;
         z-index: 31;
+    }
+    .nav-popup-preview {
         width: 300px;
         background-color: #fff;
         color: #666;
@@ -156,58 +180,121 @@
         margin-top: 20px;
     }
 
-    .menu-heading{
-      width: 100%;
+    .menu-heading {
+        width: 100%;
+    }
+
+    .share {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+        align-items: center;
+        text-align: center;
+    }
+
+    .share-popup-wrapper {
+        display: flex;
+        flex-direction: row;
+        position: absolute;
+        z-index: 50;
+    }
+    .share-popup {
+        width: 200px;
+        background-color: rgba(79, 76, 75, 0.8);
+        color: #fff;
+        padding: 20px;
+        border-left: 8px solid #ffa52a;
+        font-size: 14px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .arrow-right {
+        width: 0;
+        height: 0;
+        border-top: 12px solid transparent;
+        border-bottom: 12px solid transparent;
+        border-left: 12px solid #fff;
+        margin-top: 20px;
     }
 </style>
 
 {#if preview}
     <div
-        class="nav-popup-preview"
+        class="nav-popup-wrapper"
         style="top:{previewTop}px; right:{previewRight}px"
         transition:slide>
-        {#if preview.chapter_number}
-            <div class="preview-chapter-number">{preview.chapter_number}</div>
-        {/if}
+        <div class="nav-popup-preview">
+            {#if preview.chapter_number}
+                <div class="preview-chapter-number">
+                     {preview.chapter_number}
+                </div>
+            {/if}
 
-        {#if preview.text_title}
-            <div class="preview-chapter-title">{preview.text_title}</div>
-        {/if}
+            {#if preview.text_title}
+                <div class="preview-chapter-title">{preview.text_title}</div>
+            {/if}
 
-        {#if preview.text_intro}
-            <div class="preview-text-intro">
-                {@html preview.text_intro}
-            </div>
-        {/if}
+            {#if preview.text_navintro}
+                <div class="preview-text-intro">
+                    {@html preview.text_navintro}
+                </div>
+            {/if}
+        </div>
+        <div class="arrow-right" />
     </div>
 {/if}
+
+{#if showSharePanel}
+    <div
+        class="share-popup-wrapper"
+        style="top:{shareTop}px; right:{shareRight}px"
+        transition:slide>
+        <div class="share-popup">
+            <FbIcon />
+            <TwitterIcon />
+            <EmailIcon />
+        </div>
+        <div
+            class="arrow-right"
+            style="border-left-color: rgba(79, 76, 75, .8)" />
+    </div>
+{/if}
+
 <div class="nav-container">
-  <div class="nav-heading"> menu</div>
-  <div class="navigation">
+    <div class="nav-heading">menu</div>
+    <div class="navigation">
 
-      {#each chapterTitles as pg}
-          <div class="nav-item">
+        {#each chapterTitles as pg}
+            <div class="nav-item">
 
-              <a
-                  class="nav-circle {pg.index <= currIndex && 'activated'}"
-                  href="/{pg.slug}"
-                  on:click|preventDefault="{() => {
-                      onClickItem(pg.slug)
-                  }}"
-                  on:mouseover="{evt => {
-                      showPreview(evt, pg)
-                  }}"
-                  on:mouseout="{evt => {
-                      preview = null
-                  }}" >
+                <a
+                    class="nav-circle {pg.index <= currIndex && 'activated'}"
+                    href="/{pg.slug}"
+                    on:click|preventDefault={() => {
+                        onClickItem(pg.slug)
+                    }}
+                    on:mouseover={evt => {
+                        showPreview(evt, pg)
+                    }}
+                    on:mouseout={evt => {
+                        preview = null
+                    }}>
                     <span>{pg.text_title}</span>
-                  </a>
-              <div class="nav-line">
-                  <div
-                      class="nav-line-progress"
-                      style="height: {calcChapterProgress(pg.index, pg.children, currentPageIndex)}%" />
-              </div>
-          </div>
-      {/each}
-  </div>
+                </a>
+                <div class="nav-line">
+                    <div
+                        class="nav-line-progress"
+                        style="height: {calcChapterProgress(pg.index, pg.children, currentPageIndex)}%" />
+                </div>
+            </div>
+        {/each}
+    </div>
+    <div class="share">
+        <a href="/share" on:click|preventDefault={toggleSharePanel}>
+            <ShareIcon />
+        </a>
+        <DocIcon />
+    </div>
 </div>
