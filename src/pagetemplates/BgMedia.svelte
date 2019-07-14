@@ -77,6 +77,7 @@
         min-height: 100vh;
         position: absolute;
         top:0;
+        outline: none;
     }
   
   .active{opacity: 1}
@@ -97,11 +98,12 @@
   }
 
   .fullVideo video{
-     max-width: calc(100% - 100px);
+     max-width: calc(100% - 60px);
      max-height: 100%;
      min-height: auto;
      min-width: auto;
      position: relative;
+     width: 100%;
   }
 
 </style>

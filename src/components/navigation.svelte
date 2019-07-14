@@ -45,17 +45,32 @@
 </script>
 
 <style>
-    .navigation {
-        position: absolute;
+
+    .nav-container{
+       position: absolute;
         right: 0;
         z-index: 20;
+        width: 60px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        background-color: rgba(0, 0, 0, 0.6);
+        text-align:center;
+        font-size: 14px;
+        color: #666;
+    }
+
+    .nav-heading{
+      flex-flow: 1;
+    }
+
+    .navigation {
+       
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        height: 100%;
-        width: 100px;
-        padding: 80px 40px;
-        background-color: rgba(0, 0, 0, 0.6);
+        flex-grow: 2;
+       
     }
 
     .nav-item {
@@ -73,8 +88,8 @@
     .nav-circle {
         background-color: #fff;
         border-radius: 100%;
-        height: 24px;
-        width: 24px;
+        height: 16px;
+        width: 16px;
         display: block;
         flex-shrink: 1;
     }
@@ -85,7 +100,7 @@
     .nav-line {
         display: block;
         flex-grow: 1;
-        width: 4px;
+        width: 3px;
         padding: 0;
         margin: 10px 0;
         background-color: #fff;
@@ -103,10 +118,23 @@
     .nav-item:first-child,
     .nav-item:nth-last-child(2) {
         flex-grow: 5;
+
     }
 
+     .nav-item:last-child{
+       flex-grow: 1;
+      justify-content: flex-start;
+     }
+    .nav-item:first-child .nav-line{
+      margin-top:0;
+
+    }
+    .nav-item:nth-last-child(2) .nav-line {
+      margin-bottom:0;
+    }
     .nav-item:last-child .nav-line {
         display: none;
+        margin:0;
     }
 
     .nav-popup-preview {
@@ -126,6 +154,10 @@
     }
     .preview-text-intro {
         margin-top: 20px;
+    }
+
+    .menu-heading{
+      width: 100%;
     }
 </style>
 
@@ -149,31 +181,33 @@
         {/if}
     </div>
 {/if}
+<div class="nav-container">
+  <div class="nav-heading"> menu</div>
+  <div class="navigation">
 
-<div class="navigation">
+      {#each chapterTitles as pg}
+          <div class="nav-item">
 
-    {#each chapterTitles as pg}
-        <div class="nav-item">
-
-            <a
-                class="nav-circle {pg.index <= currIndex && 'activated'}"
-                href="/{pg.slug}"
-                on:click|preventDefault="{() => {
-                    onClickItem(pg.slug)
-                }}"
-                on:mouseover="{evt => {
-                    showPreview(evt, pg)
-                }}"
-                on:mouseout="{evt => {
-                    preview = null
-                }}" >
-                  <span>{pg.text_title}</span>
-                </a>
-            <div class="nav-line">
-                <div
-                    class="nav-line-progress"
-                    style="height: {calcChapterProgress(pg.index, pg.children, currentPageIndex)}%" />
-            </div>
-        </div>
-    {/each}
+              <a
+                  class="nav-circle {pg.index <= currIndex && 'activated'}"
+                  href="/{pg.slug}"
+                  on:click|preventDefault="{() => {
+                      onClickItem(pg.slug)
+                  }}"
+                  on:mouseover="{evt => {
+                      showPreview(evt, pg)
+                  }}"
+                  on:mouseout="{evt => {
+                      preview = null
+                  }}" >
+                    <span>{pg.text_title}</span>
+                  </a>
+              <div class="nav-line">
+                  <div
+                      class="nav-line-progress"
+                      style="height: {calcChapterProgress(pg.index, pg.children, currentPageIndex)}%" />
+              </div>
+          </div>
+      {/each}
+  </div>
 </div>
