@@ -28,7 +28,7 @@
 
     .content {
         max-width: 50%;
-        margin: 40px;
+        margin: 80px;
     }
 </style>
 

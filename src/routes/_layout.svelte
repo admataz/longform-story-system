@@ -1,8 +1,8 @@
 <script context="module">
-    export async function preload({params, path, query}) {
+    export async function preload({ params, path, query }) {
         const res = await this.fetch(`pages.json`)
         const jsonData = await res.json()
-        const pgData = jsonData.map((p,i) => ({...p, index:i }))
+        const pgData = jsonData.map((p, i) => ({ ...p, index: i }))
         const pages = pgData.reduce((acc, page, index, arr) => {
             const p = {
                 ...page,
@@ -17,24 +17,33 @@
 
         return {
             pages,
-            pgData
+            pgData,
         }
     }
 </script>
 
-
 <script>
-  import { setContext } from 'svelte';
-  import Nav from '../components/navigation.svelte'
+    import { setContext } from 'svelte'
+    import Nav from '../components/navigation.svelte'
+    import { clickNavTo } from '../store/'
 
-  export let pages, pgData
-  export let segment
-
-  setContext('pages', pages)
+    export let pages, pgData
+    export let segment
+    function onClickNav(evt) {
+        $clickNavTo = evt.detail
+    }
+    setContext('pages', pages)
 </script>
 
+<style>
+main {
+  display:flex;
+  
+}
 
-<Nav pgData={pgData} {segment} />
-<main>
-    <slot></slot>
-</main>
+</style>
+
+    <main>
+        <slot />
+        <Nav {pgData} {segment} on:clickNav={onClickNav} />
+    </main>

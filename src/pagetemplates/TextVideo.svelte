@@ -30,10 +30,11 @@
         flex-grow: 1;
     }
 
-    .media-image img,
-    .media-video .video {
+    .media-image img {
         max-width: 100%;
     }
+
+    /* .media-video .video  */
 </style>
 
 <div>

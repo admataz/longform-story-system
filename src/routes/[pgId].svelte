@@ -1,17 +1,22 @@
 <script context="module">
-    export async function preload({ params }) {
+    export async function preload({ params, path, query }) {
+    // const res = await this.fetch(`${params.pgId}.json`)
+    // const currentPageData = await res.json()
+   
         return {
+            // currentPageData,
             pgId: params.pgId,
         }
     }
 </script>
 
-
 <script>
-    import { getContext } from 'svelte';
+    import { getContext } from 'svelte'
     import { goto, prefetch } from '@sapper/app'
     import marked from 'marked'
     import { fade } from 'svelte/transition'
+
+    import { clickNavTo } from '../store/'
     import Scrollmation, {
         toHomeRatio,
         toStartRatio,
@@ -40,6 +45,7 @@
     let scrollData
     let lastPage = null
     let okToNav = false
+    let navTo = null
 
     const templates = {
         'chapter-title': ChapterTitle,
@@ -70,41 +76,48 @@
     function onKeyDown({ key }) {
         if (key === 'ArrowRight' || key === 'ArrowDown') {
             okToNav = true
+            navTo = nextPage
             scrollTo('end')
         }
         if (key === 'ArrowLeft' || key === 'ArrowUp') {
             okToNav = true
+            navTo = prevPage
             scrollTo('start')
         }
     }
 
-    async function navNext(e) {
-        if(!okToNav){
-          return
+    function gotoPage(pg) {
+        lastPage = currentPage
+        currentPage = pages[pg]
+        okToNav = false
+        goto(pg)
+        navTo = null
+        $clickNavTo = null
+    }
+
+    function navNext() {
+        if (!okToNav) {
+            return
         }
         isPrevNav = false
         scrollToPosition = null
-        if (nextPage) {
-            lastPage = currentPage
-            currentPage = pages[nextPage]
-            prefetch(pages[nextPage]._nav.next)
-            okToNav = false
-            goto(nextPage)
+        if (navTo) {
+            gotoPage(navTo)
+        } else if (nextPage) {
+            gotoPage(nextPage)
         }
     }
 
-    async function navPrev(e) {
-        if(!okToNav){
-          return
+    function navPrev() {
+        if (!okToNav) {
+            return
         }
-        isPrevNav = true
+        isPrevNav = !!$clickNavTo ? false : true
         scrollToPosition = null
-        if (prevPage) {
-            lastPage = currentPage
-            currentPage = pages[prevPage]
-            prefetch(pages[prevPage]._nav.next)
-            okToNav = false
-            goto(prevPage)
+        if (navTo) {
+            gotoPage(navTo)
+        } else if (prevPage) {
+            gotoPage(prevPage)
         }
     }
 
@@ -122,6 +135,12 @@
         scrollTo('end')
     }
 
+    function onClickNav(to) {
+        okToNav = true
+        navTo = to
+        scrollTo('start')
+    }
+
     function onScroll(evt) {
         scrollData = evt.detail
     }
@@ -132,60 +151,47 @@
     // $: changeBg = shouldSwitchBg(lastPage, currentPage)
     // $: console.log(changeBg)
     $: currPageContent = formatPageData(pages[pgId])
+    // $: nextNav = $clickNavTo
+    $: doClick = $clickNavTo ? onClickNav($clickNavTo): null
 </script>
 
 <style>
-  .nav {
-    position: absolute;
-    top:0;
-    z-index: 1000;
-  }
-  .wheel2{
-    bottom: 10px;
-    right: 10px;
-    position: absolute;
-    z-index: 20000;
-  }
-  .wheel1{
-    bottom: 10px;
-    right: 40px;
-    position: absolute;
-    z-index: 20000;
-  }
+    .nav {
+        position: absolute;
+        top: 0;
+        z-index: 1000;
+    }
 </style>
 
-
 <svelte:window on:keydown={onKeyDown} />
-    <div class="wheel1">
-      {#if false}
-        <a href={prevPage} on:click|preventDefault={onClickPrev} rel="prefetch">
-             <Wheel {scrollData} />
-        </a>
-    {/if}
-    </div>
-    
-    <div class="wheel2">
-      {#if false}
-        <a href={nextPage} on:click|preventDefault={onClickNext} rel="prefetch">
-             <Wheel {scrollData} />
-        </a>
-    {/if}
-    </div>
 
-<div class="bgitems" >
-    {#each Object.keys(pages) as p}
-            {#if pagesQueue.includes(p)}
-              <div class="bg-item {p===pgId ? 'active' : ''}" id="{`bg-${p}`}">
-                <div transition:fade={{ delay: 0, duration: 800 }}>
-                    <BgMedia pageData={formatPageData(pages[p])} isActive={p===pgId} on:next={navNext} on:prev={navPrev}/>
-                </div>
-            </div>
-          {/if}
-    {/each}
+<div class="wheel1">
+    <a href={prevPage} on:click|preventDefault={onClickPrev} rel="prefetch">
+          
+    </a>
 </div>
 
-      {#each Object.keys(pages) as p}
-            {#if pagesQueue.includes(p)}
+<div class="wheel2">
+    <a href={nextPage} on:click|preventDefault={onClickNext} rel="prefetch">
+         
+    </a>
+</div>
+
+<div class="bgitems">
+    {#each Object.keys(pages) as p}
+        {#if pagesQueue.includes(p)}
+            <div class="bg-item {p === pgId ? 'active' : ''}" id="{`bg-${p}`}">
+                <div transition:fade={{ delay: 0, duration: 800 }}>
+                    <BgMedia
+                        pageData={formatPageData(pages[p])}
+                        isActive={p === pgId}
+                        on:next={onClickNext}
+                        on:prev={onClickPrev} />
+                </div>
+            </div>
+        {/if}
+    {/each}
+</div>
 <Scrollmation
     on:next={navNext}
     on:prev={navPrev}
@@ -194,16 +200,18 @@
     {isPrevNav}
     {scrollToPosition}
     {pgId}>
- 
+    <!-- TODO: investigate useing let: to pass props values back up from the slot component -->
     <div slot="fg">
-        <svelte:component
-            this={templates[currentPage.template]}
-            pageData={currPageContent}
-            {scrollData}
-            isActive={true} />
+
+        {#each Object.keys(pages) as p}
+            {#if pagesQueue.includes(p)}
+                <svelte:component
+                    this={templates[currentPage.template]}
+                    pageData={currPageContent}
+                    {scrollData}
+                    isActive={true} />
+            {/if}
+        {/each}
     </div>
 
 </Scrollmation>
-    {/if}
-    {/each}
-
