@@ -34,6 +34,7 @@
     import TextBgMedia from '../pagetemplates/TextBgMedia.svelte'
     import TextImage from '../pagetemplates/TextImage.svelte'
     import TextVideo from '../pagetemplates/TextVideo.svelte'
+    import TextOnly from '../pagetemplates/TextOnly.svelte'
     import Measurement from '../pagetemplates/Measurement.svelte'
     import Wheel from '../components/wheel.svelte'
     import VideoInline from '../pagetemplates/VideoInline.svelte'
@@ -149,7 +150,7 @@
     $: prevPage = currentPage ? currentPage._nav.prev : null
     $: pagesQueue = [pgId]
     // $: changeBg = shouldSwitchBg(lastPage, currentPage)
-    // $: console.log(changeBg)
+  
     $: currPageContent = formatPageData(pages[pgId])
     // $: nextNav = $clickNavTo
     $: doClick = $clickNavTo ? onClickNav($clickNavTo): null
@@ -160,6 +161,11 @@
         position: absolute;
         top: 0;
         z-index: 1000;
+    }
+    .static-content{
+      position: absolute;
+      z-index: -1;
+      top: 110vh;
     }
 </style>
 
@@ -175,6 +181,9 @@
     <a href={nextPage} on:click|preventDefault={onClickNext} rel="prefetch">
          
     </a>
+</div>
+<div class="static-content">
+<TextOnly pageData={currPageContent} isActive={false} />
 </div>
 
 <div class="bgitems">
@@ -215,3 +224,4 @@
     </div>
 
 </Scrollmation>
+

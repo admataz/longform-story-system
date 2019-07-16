@@ -30,11 +30,11 @@
 
     .full-screen {
         width: 100%;
-        height: 110vh;
-        display: none;
+        height: 300px;
         flex-direction: column;
         justify-content: center;
-        border:1px solid #fff;
+        /* border:10px solid red;
+        background: #fff; */
     }
 
     video {

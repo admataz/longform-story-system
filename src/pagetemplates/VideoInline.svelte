@@ -34,7 +34,9 @@
     }
 
     .content {
-        margin: 200px 2%;
+        margin: 200px 0 0 0;
+        padding-left: 80px;
+        margin-bottom: 0;
         height: 100%;
         overflow: auto;
         max-width: 40%;

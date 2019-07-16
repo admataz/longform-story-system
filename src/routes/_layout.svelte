@@ -44,6 +44,6 @@ main {
 </style>
 
     <main>
-        <slot />
+        <slot>some fallback content</slot>
         <Nav {pgData} {segment} on:clickNav={onClickNav} />
     </main>

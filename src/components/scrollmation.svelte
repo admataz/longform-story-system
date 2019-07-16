@@ -58,7 +58,7 @@
 
     export let startPos = 10 // px past the end
     export let homePos = 120 //px from the top
-    export let endPos = 100 // px above the top
+    export let endPos = -250 // px above the top - or negative value for before the end
     export let duration = 800
     export let easing = cubicOut
     export let scrollData = {}
@@ -70,7 +70,6 @@
     async function onScroll(e) {
         prevScrollPosPx = scrollPosPx
         scrollPosPx = e.target.scrollTop
-
         if (!animatingScroll) {
             progress.set(scrollPosPx, { duration: 0 })
         }
