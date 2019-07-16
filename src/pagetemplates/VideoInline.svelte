@@ -13,6 +13,9 @@
         video,
         bg_opacity,
     } = pageData
+
+    const [text_before_video, text_after_video] = text_bodycopy.split('{video}')
+
 </script>
 
 <style>
@@ -55,7 +58,6 @@
     .media-video {
         max-width: 100%;
         max-height: 100%;
-        margin: 10px;
     }
 
     .media-image img,
@@ -85,24 +87,26 @@
             </div>
         {/if}
 
-        {#if text_bodycopy}
+        {#if text_before_video}
             <div class="text-bodycopy">
-                {@html text_bodycopy}
+                {@html text_before_video}
             </div>
         {/if}
-    </div>
 
-    <div class="media bg">
-        {#if image}
-            <div class="media-image">
-                <img src={image} alt={text_title} />
-            </div>
-        {:else if video}
+        {#if video}
             <div class="media-video">
-                <video controls="false" loop autoplay>
+                <video controls paused>
                     <source src={video} />
                 </video>
             </div>
         {/if}
+
+
+        {#if text_after_video}
+            <div class="text-bodycopy">
+                {@html text_after_video}
+            </div>
+        {/if}
     </div>
+
 </div>

@@ -7,7 +7,7 @@
 
 <style>
     .content {
-        padding: 0 120px;
+        padding: 0 80px;
     }
     .chapter-number {
         font-size: 24px;

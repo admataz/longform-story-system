@@ -69,11 +69,11 @@
         position: absolute;
         right: 0;
         z-index: 20;
-        width: 60px;
+        width: 80px;
         height: 100%;
         display: flex;
         flex-direction: column;
-        background-color: rgba(0, 0, 0, 0.6);
+        background-color: rgba(0, 0, 0, 0.4);
         text-align: center;
         font-size: 14px;
         color: #fff;
@@ -89,11 +89,11 @@
     }
 
     .navigation {
-        margin: 10px 0;
+        margin: 20px 0 50px 0;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        flex-grow: 20;
+        flex-grow: 100;
     }
 
     .nav-item {
@@ -111,8 +111,8 @@
     .nav-circle {
         background-color: #fff;
         border-radius: 100%;
-        height: 16px;
-        width: 16px;
+        height: 14px;
+        width: 14px;
         display: block;
         flex-shrink: 1;
     }
@@ -123,7 +123,7 @@
     .nav-line {
         display: block;
         flex-grow: 1;
-        width: 3px;
+        width: 2px;
         padding: 0;
         margin: 10px 0;
         background-color: #fff;
@@ -191,6 +191,7 @@
         justify-content: space-evenly;
         align-items: center;
         text-align: center;
+        min-height: 100px;
     }
 
     .share-popup-wrapper {
@@ -293,8 +294,9 @@
     </div>
     <div class="share">
         <a href="/share" on:click|preventDefault={toggleSharePanel}>
-            <ShareIcon />
+            <ShareIcon size="20px" />
         </a>
-        <DocIcon />
+        
+        <DocIcon size="24px" />
     </div>
 </div>

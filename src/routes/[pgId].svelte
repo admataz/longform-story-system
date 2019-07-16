@@ -1,6 +1,10 @@
 <script context="module">
-    export async function preload({ params }) {
+    export async function preload({ params, path, query }) {
+    // const res = await this.fetch(`${params.pgId}.json`)
+    // const currentPageData = await res.json()
+   
         return {
+            // currentPageData,
             pgId: params.pgId,
         }
     }
@@ -181,14 +185,13 @@
                     <BgMedia
                         pageData={formatPageData(pages[p])}
                         isActive={p === pgId}
-                        on:next={navNext}
-                        on:prev={navPrev} />
+                        on:next={onClickNext}
+                        on:prev={onClickPrev} />
                 </div>
             </div>
         {/if}
     {/each}
 </div>
-
 <Scrollmation
     on:next={navNext}
     on:prev={navPrev}
@@ -199,6 +202,7 @@
     {pgId}>
     <!-- TODO: investigate useing let: to pass props values back up from the slot component -->
     <div slot="fg">
+
         {#each Object.keys(pages) as p}
             {#if pagesQueue.includes(p)}
                 <svelte:component

@@ -22,7 +22,8 @@
     } = pageData
     const dispatch = createEventDispatcher()
 
-    const isFullVideo = (template==='video-full')
+    const isFullVideo = (template==='video-full' )
+    const isInlineVideo = (template ==='video-inline')
     
     $: videoPaused = !isActive
     // $: videoDuration && console.log(videoDuration-videoCurrentTime)
@@ -51,7 +52,6 @@
         width: 100vw;
         height: 100vh;
         overflow: hidden;
-        transition: 800ms;
     }
     .media-image,
     .media-video {
@@ -83,8 +83,6 @@
   .active{opacity: 1}
   .inactive{opacity: 0}
   
-  .fullVideo {
-  }
   .fullVideo.active{
     z-index: 2
   }
@@ -98,7 +96,7 @@
   }
 
   .fullVideo video{
-     max-width: calc(100% - 60px);
+     max-width: calc(100% - 80px);
      max-height: 100%;
      min-height: auto;
      min-width: auto;
@@ -111,7 +109,7 @@
 <div class="media" style="opacity: {isFullVideo ? 1 :  bg_opacity || 0.5}">
     {#if pageData.image}
         <div class="media-image"  style="background-image:url({pageData.image})" />
-    {:else if pageData.video}
+    {:else if pageData.video && !isInlineVideo}
         <div class="media-video" on:wheel={onWheel} >
             <video 
               preload="auto"
@@ -129,3 +127,4 @@
     {/if}
 </div>
 </div>
+
