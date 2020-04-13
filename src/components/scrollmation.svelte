@@ -65,7 +65,7 @@
     export let isPrevNav = false
     export let scrollToPosition = null
     export let jumpToPosition = null
-    export let pgId
+    export let pgId = 0
 
     async function onScroll(e) {
         prevScrollPosPx = scrollPosPx
