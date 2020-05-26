@@ -56,13 +56,13 @@
     let targetPos = 'home'
     let loading = true
 
-    export let startPos = 10 // px past the end
-    export let homePos = 120 //px from the top
-    export let endPos = -250 // px above the top - or negative value for before the end
+    export let startPos = 0 // px past the end
+    export let homePos = 0 //px from the top
+    export let endPos = 0 // px above the top - or negative value for before the end
     export let duration = 800
     export let easing = cubicOut
     export let scrollData = {}
-    export let isPrevNav = false
+    export const isprevnav = false
     export let scrollToPosition = null
     export let jumpToPosition = null
     export let pgId = 0
@@ -151,7 +151,7 @@
 
     async function initPos(p) {
         setTimeout(async () => {
-            if (isPrevNav) {
+            if (isprenav) {
                 await scrollToPos('beforeEnd', false)
             } else {
                 await scrollToPos('beforeStart', false)

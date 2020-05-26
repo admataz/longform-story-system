@@ -17,7 +17,8 @@
     "marked": "^0.7.0",
     "papaparse": "^5.2.0",
     "polka": "^0.5.0",
-    "sirv": "^0.4.2"
+    "sirv": "^0.4.2",
+    "svelte-scrollmation": "^1.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",

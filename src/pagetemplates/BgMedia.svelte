@@ -1,35 +1,35 @@
 <script>
-    import {  createEventDispatcher } from 'svelte'
+    import {  createEventDispatcher, beforeUpdate, afterUpdate } from 'svelte'
 
     export let pageData
-    export let bgOpacity = 1
+    // export let bgOpacity = 1
     export let isActive
     export let videoPaused=true
     export let  videoCurrentTime=0
     export let  videoDuration=0
-    export let isVideoFinished=false
+    
+    // export let isVideoFinished=false
 
-    const {
-        chapter_number,
-        text_title,
-        text_subheading,
-        text_intro,
-        text_bodycopy,
-        image,
-        video,
-        bg_opacity,
-        template
-    } = pageData
     const dispatch = createEventDispatcher()
-
-    const isFullVideo = (template==='video-full' )
-    const isInlineVideo = (template ==='video-inline')
+    const isFullVideo = (pageData.template==='video-full' )
+    const isInlineVideo = (pageData.template ==='video-inline')
     
     $: videoPaused = !isActive
     // $: videoDuration && console.log(videoDuration-videoCurrentTime)
     // $: console.log(isVideoFinished)
     // $: console.log(isActive && isFullVideo && videoCurrentTime)
     // $: (videoDuration ===videoCurrentTime ) && isActive && isFullVideo && dispatch('next')
+
+    $: slug = pageData.slug
+    $: chapter_number = pageData.chapter_number
+    $: text_title = pageData.text_title
+    $: text_subheading = pageData.text_subheading
+    $: text_intro = pageData.text_intro
+    $: text_bodycopy = pageData.text_bodycopy
+    $: image = pageData.image
+    $: video = pageData.video
+    $: bg_opacity = pageData.bg_opacity
+
     function onWheel(evt){
       if(!isActive || !isFullVideo){
         return
@@ -44,7 +44,6 @@
 </script>
 
 <style>
-    
     .container{
         position: absolute;
         min-width: 100%;
@@ -107,8 +106,8 @@
 </style>
 <div class="container {isActive?'active':'inactive'} {isFullVideo? 'fullVideo': 'bgVideo'}" >
 <div class="media" style="opacity: {isFullVideo ? 1 :  bg_opacity || 0.5}">
-    {#if pageData.image}
-        <div class="media-image"  style="background-image:url({pageData.image})" />
+    {#if image}
+        <div class="media-image"  style="background-image:url({image})" />
     {:else if pageData.video && !isInlineVideo}
         <div class="media-video" on:wheel={onWheel} >
             <video 
@@ -121,7 +120,7 @@
               bind:duration={videoDuration}
               muted={!isFullVideo} 
               >
-              <source src={pageData.video} />
+              <source src={video} />
             </video>
         </div>
     {/if}

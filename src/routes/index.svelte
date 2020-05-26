@@ -12,4 +12,4 @@
 
 <svelte:head />
 
-<a href="pg001" rel="prefetch">go</a>
+<a href="01" rel="prefetch">go</a>

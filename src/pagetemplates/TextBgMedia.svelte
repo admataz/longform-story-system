@@ -1,38 +1,32 @@
 <script>
-    export let pageData
-    export let scrollData
-    export let isActive
-    const {
-        chapter_number,
-        text_title,
-        text_subheading,
-        text_intro,
-        text_bodycopy,
-    } = pageData
+  export let pageData
+  $: slug = pageData.slug
+  $: template = pageData.template
+  $: chapter_number = pageData.chapter_number
+  $: text_title = pageData.text_title
+  $: text_intro = pageData.text_intro
+  $: text_subheading = pageData.text_subheading
+  $: text_bodycopy = pageData.text_bodycopy
+  $: text_navintro = pageData.text_navintro
+  $: image = pageData.image
+  $: video = pageData.video
+  $: bg_opacity = pageData.bg_opacity
 </script>
 
 <style>
     .text-intro {
         max-width: 60%;
     }
-    h1 {
-        margin-top: 0;
-        font-size: 46pt;
-    }
-    h1:after {
-        content: '';
-        border-bottom: 4px solid #ffa52a;
-        display: block;
-        width: 50%;
-    }
 
     .content {
-        max-width: 50%;
+        max-width: 100%;
         margin: 80px;
     }
 </style>
 
+
 <div class="content">
+    <p>{slug}</p>
     {#if chapter_number}
         <p>{chapter_number}</p>
     {/if}

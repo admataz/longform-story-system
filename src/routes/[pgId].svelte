@@ -1,10 +1,10 @@
 <script context="module">
     export async function preload({ params, path, query }) {
-    // const res = await this.fetch(`${params.pgId}.json`)
-    // const currentPageData = await res.json()
-   
+        const res = await this.fetch(`${params.pgId}.json`)
+        const currentPageData = await res.json()
+
         return {
-            // currentPageData,
+            currentPageData,
             pgId: params.pgId,
         }
     }
@@ -15,8 +15,11 @@
     import { goto, prefetch } from '@sapper/app'
     import marked from 'marked'
     import { fade } from 'svelte/transition'
+    import { tweened } from 'svelte/motion'
+    import { cubicOut } from 'svelte/easing'
 
     import { clickNavTo } from '../store/'
+
     import Scrollmation, {
         toHomeRatio,
         toStartRatio,
@@ -26,7 +29,8 @@
         toHomePx,
         toEndPx,
         toStartPx,
-    } from '../components/scrollmation.svelte'
+    } from 'svelte-scrollmation/Scrollmation.svelte'
+
     import BgMedia from '../pagetemplates/BgMedia.svelte'
     import ChapterTitle from '../pagetemplates/ChapterTitle.svelte'
     import TextMediaSplit from '../pagetemplates/TextMediaSplit.svelte'
@@ -39,10 +43,17 @@
     import Wheel from '../components/wheel.svelte'
     import VideoInline from '../pagetemplates/VideoInline.svelte'
 
+    let interchange = tweened(1, {
+        duration:400,
+        easing: cubicOut,
+    })
+
     const pages = getContext('pages')
-    export let pgId, isPrevNav
+    export let pgId
+    export let currentPageData
+    export let isprevnav = false
     let canNav = true
-    let scrollToPosition = null
+    let scrolltoposition = null
     let scrollData
     let lastPage = null
     let okToNav = false
@@ -56,7 +67,24 @@
         'text-image': TextImage,
         'text-video': TextVideo,
         'video-inline': VideoInline,
+        'text-only': TextOnly,
         measurement: Measurement,
+    }
+
+    function fadeBGTransition(current, next){
+      if(pages[current].image){
+        if(pages[current].image === pages[next].image){
+          return false
+        }
+      }
+
+      if(pages[current].video){
+        if(pages[current].video === pages[next].video){
+          return false
+        }
+      }
+
+      return true
     }
 
     function formatPageData(page) {
@@ -71,7 +99,7 @@
     }
 
     function scrollTo(pos) {
-        scrollToPosition = pos
+        scrolltoposition = pos
     }
 
     function onKeyDown({ key }) {
@@ -96,30 +124,36 @@
         $clickNavTo = null
     }
 
-    function navNext() {
-        if (!okToNav) {
-            return
+    async function navNext(e) {
+        if(fadeBGTransition(pgId, nextPage)){
+          await interchange.set(0, {duration: 600})
         }
-        isPrevNav = false
-        scrollToPosition = null
+        isprevnav = false
+        scrolltoposition = null
+
         if (navTo) {
             gotoPage(navTo)
         } else if (nextPage) {
             gotoPage(nextPage)
         }
+        await interchange.set(1)
     }
 
-    function navPrev() {
+    async function navPrev() {
+        if(fadeBGTransition(pgId, prevPage)){
+          await interchange.set(0, {duration: 600})
+        }
         if (!okToNav) {
             return
         }
-        isPrevNav = !!$clickNavTo ? false : true
-        scrollToPosition = null
+        isprevnav = !!$clickNavTo ? false : true
+        scrolltoposition = null
         if (navTo) {
             gotoPage(navTo)
         } else if (prevPage) {
             gotoPage(prevPage)
         }
+        await interchange.set(1)
     }
 
     function navHome(e) {
@@ -150,78 +184,77 @@
     $: prevPage = currentPage ? currentPage._nav.prev : null
     $: pagesQueue = [pgId]
     // $: changeBg = shouldSwitchBg(lastPage, currentPage)
-  
-    $: currPageContent = formatPageData(pages[pgId])
+
+    $: currPageContent = formatPageData(currentPageData)
     // $: nextNav = $clickNavTo
-    $: doClick = $clickNavTo ? onClickNav($clickNavTo): null
+    $: doClick = $clickNavTo ? onClickNav($clickNavTo) : null
+    $: toHome = $interchange
+    // scrollData ? 1 - toHomeRatio(scrollData) || 1 : 0
+
 </script>
 
 <style>
-    .nav {
+    /* .nav {
         position: absolute;
         top: 0;
         z-index: 1000;
-    }
-    .static-content{
-      position: absolute;
-      z-index: -1;
-      top: 110vh;
+    } */
+    .static-content {
+        position: absolute;
+        z-index: -1;
+        top: 110vh;
     }
 </style>
 
 <svelte:window on:keydown={onKeyDown} />
+<svelte:head>
+<title>{currPageContent.text_title}</title>
+</svelte:head>
 
-<div class="wheel1">
-    <a href={prevPage} on:click|preventDefault={onClickPrev} rel="prefetch">
-          
-    </a>
-</div>
-
-<div class="wheel2">
-    <a href={nextPage} on:click|preventDefault={onClickNext} rel="prefetch">
-         
-    </a>
-</div>
 <div class="static-content">
-<TextOnly pageData={currPageContent} isActive={false} />
+    <TextOnly pageData={currPageContent} />
 </div>
 
 <div class="bgitems">
-    {#each Object.keys(pages) as p}
+    <!--   {#each Object.keys(pages) as p}
         {#if pagesQueue.includes(p)}
-            <div class="bg-item {p === pgId ? 'active' : ''}" id="{`bg-${p}`}">
-                <div transition:fade={{ delay: 0, duration: 800 }}>
-                    <BgMedia
-                        pageData={formatPageData(pages[p])}
-                        isActive={p === pgId}
-                        on:next={onClickNext}
-                        on:prev={onClickPrev} />
-                </div>
-            </div>
-        {/if}
-    {/each}
-</div>
-<Scrollmation
-    on:next={navNext}
-    on:prev={navPrev}
-    on:scroll={onScroll}
-    on:home={navHome}
-    {isPrevNav}
-    {scrollToPosition}
-    {pgId}>
-    <!-- TODO: investigate useing let: to pass props values back up from the slot component -->
-    <div slot="fg">
-
-        {#each Object.keys(pages) as p}
-            {#if pagesQueue.includes(p)}
-                <svelte:component
-                    this={templates[currentPage.template]}
-                    pageData={currPageContent}
-                    {scrollData}
-                    isActive={true} />
-            {/if}
-        {/each}
+            <div class="bg-item active" id="{`bg-${p}`}"> 
+    <div transition:fade={{ delay: 0, duration: 1800 }}>
+        <BgMedia
+            pageData={formatPageData(pages[pgId])}
+            isActive={true}
+            on:next={onClickNext}
+            on:prev={onClickPrev} />
     </div>
+    <!--             </div>
+        {/if}
+    {/each}-->
 
-</Scrollmation>
+    <div style="opacity:{toHome} ">
+        <BgMedia
+            pageData={formatPageData(pages[pgId])}
+            isActive={true}
+            on:next={onClickNext}
+            on:prev={onClickPrev} />
+    </div>
+</div>
 
+<div class="container">
+    <Scrollmation
+        homepos={100}
+        endpos={10}
+        on:next={navNext}
+        on:prev={navPrev}
+        on:scroll={onScroll}
+        on:home={navHome}
+        {isprevnav}
+        {scrolltoposition}
+        {pgId}>
+
+        <svelte:component
+            this={templates[currentPage.template]}
+            pageData={currPageContent} />
+
+    </Scrollmation>
+
+</div>
