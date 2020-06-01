@@ -33,6 +33,7 @@
         $clickNavTo = evt.detail
     }
     setContext('pages', pages)
+    setContext('pgData', pgData)
 </script>
 
 <style>

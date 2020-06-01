@@ -1,10 +1,9 @@
 <script context="module">
     export async function preload({ params, path, query }) {
-        const res = await this.fetch(`${params.pgId}.json`)
-        const currentPageData = await res.json()
-
+        // const res = await this.fetch(`${params.pgId}.json`)
+        // const currentPageData = await res.json(
         return {
-            currentPageData,
+            // currentPageData,
             pgId: params.pgId,
         }
     }
@@ -17,9 +16,7 @@
     import { fade } from 'svelte/transition'
     import { tweened } from 'svelte/motion'
     import { cubicOut } from 'svelte/easing'
-
     import { clickNavTo } from '../store/'
-
     import Scrollmation, {
         toHomeRatio,
         toStartRatio,
@@ -43,14 +40,14 @@
     import Wheel from '../components/wheel.svelte'
     import VideoInline from '../pagetemplates/VideoInline.svelte'
 
-    let interchange = tweened(1, {
-        duration:400,
-        easing: cubicOut,
-    })
+    import Bg from '../components/bg.svelte'
+    import BgVideo from '../components/bg-video.svelte'
 
     const pages = getContext('pages')
+    const pgData = getContext('pgData')
+
     export let pgId
-    export let currentPageData
+    // export let currentPageData
     export let isprevnav = false
     let canNav = true
     let scrolltoposition = null
@@ -58,6 +55,7 @@
     let lastPage = null
     let okToNav = false
     let navTo = null
+    let doFade = false
 
     const templates = {
         'chapter-title': ChapterTitle,
@@ -69,22 +67,6 @@
         'video-inline': VideoInline,
         'text-only': TextOnly,
         measurement: Measurement,
-    }
-
-    function fadeBGTransition(current, next){
-      if(pages[current].image){
-        if(pages[current].image === pages[next].image){
-          return false
-        }
-      }
-
-      if(pages[current].video){
-        if(pages[current].video === pages[next].video){
-          return false
-        }
-      }
-
-      return true
     }
 
     function formatPageData(page) {
@@ -125,9 +107,6 @@
     }
 
     async function navNext(e) {
-        if(fadeBGTransition(pgId, nextPage)){
-          await interchange.set(0, {duration: 600})
-        }
         isprevnav = false
         scrolltoposition = null
 
@@ -136,13 +115,9 @@
         } else if (nextPage) {
             gotoPage(nextPage)
         }
-        await interchange.set(1)
     }
 
     async function navPrev() {
-        if(fadeBGTransition(pgId, prevPage)){
-          await interchange.set(0, {duration: 600})
-        }
         if (!okToNav) {
             return
         }
@@ -153,7 +128,6 @@
         } else if (prevPage) {
             gotoPage(prevPage)
         }
-        await interchange.set(1)
     }
 
     function navHome(e) {
@@ -179,65 +153,41 @@
     function onScroll(evt) {
         scrollData = evt.detail
     }
+
     $: currentPage = pages[pgId]
     $: nextPage = currentPage ? currentPage._nav.next : null
     $: prevPage = currentPage ? currentPage._nav.prev : null
     $: pagesQueue = [pgId]
-    // $: changeBg = shouldSwitchBg(lastPage, currentPage)
-
-    $: currPageContent = formatPageData(currentPageData)
-    // $: nextNav = $clickNavTo
+    $: currPageContent = formatPageData(currentPage)
     $: doClick = $clickNavTo ? onClickNav($clickNavTo) : null
-    $: toHome = $interchange
-    // scrollData ? 1 - toHomeRatio(scrollData) || 1 : 0
-
 </script>
 
 <style>
-    /* .nav {
-        position: absolute;
-        top: 0;
-        z-index: 1000;
-    } */
     .static-content {
         position: absolute;
         z-index: -1;
         top: 110vh;
     }
+    .container{
+      z-index: 100
+    }
 </style>
 
 <svelte:window on:keydown={onKeyDown} />
+
 <svelte:head>
-<title>{currPageContent.text_title}</title>
+    <title>{currPageContent.text_title}</title>
 </svelte:head>
 
 <div class="static-content">
     <TextOnly pageData={currPageContent} />
 </div>
 
-<div class="bgitems">
-    <!--   {#each Object.keys(pages) as p}
-        {#if pagesQueue.includes(p)}
-            <div class="bg-item active" id="{`bg-${p}`}"> 
-    <div transition:fade={{ delay: 0, duration: 1800 }}>
-        <BgMedia
-            pageData={formatPageData(pages[pgId])}
-            isActive={true}
-            on:next={onClickNext}
-            on:prev={onClickPrev} />
-    </div>
-    <!--             </div>
-        {/if}
-    {/each}-->
-
-    <div style="opacity:{toHome} ">
-        <BgMedia
-            pageData={formatPageData(pages[pgId])}
-            isActive={true}
-            on:next={onClickNext}
-            on:prev={onClickPrev} />
-    </div>
-</div>
+{#if currPageContent.bg}
+    <Bg {pgId} {pgData} />
+{:else if currPageContent.bg_video}
+    <BgVideo {pgId} {pgData} />
+{/if}
 
 <div class="container">
     <Scrollmation
@@ -250,11 +200,8 @@
         {isprevnav}
         {scrolltoposition}
         {pgId}>
-
         <svelte:component
             this={templates[currentPage.template]}
             pageData={currPageContent} />
-
     </Scrollmation>
-
 </div>

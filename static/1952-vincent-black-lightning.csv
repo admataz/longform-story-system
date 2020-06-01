@@ -1,18 +1,18 @@
-slug,template,chapter_number,text_title,text_intro,text_subheading,text_bodycopy,text_navintro,image,video,bg,bg_opacity
-hello,chapter-title,chapter number,chapter title with no bg,intro,subheading,body copy,nav intnro,,,0.2,
-bg-video,text-bg-media,chapter number,text bg media with video,intro,subheading,body copy,nav intnro,,http://localhost:3000/media/IMG_5902.mp4,0.2,
-bg-video-cont,text-bg-media,chapter number,text bg media with video,intro,subheading,video plays seamlessly,nav intnro,,http://localhost:3000/media/IMG_5902.mp4,0.2,
-bg-image,text-bg-media,chapter number,title,intro,subheading,body copy,nav intnro,http://localhost:3000/media/IMG_1132.jpeg,,0.2,
-ch-title,chapter-title,chapter number,title,intro,subheading,body copy,nav intnro,http://localhost:3000/media/IMG_1832.jpeg,,0.4,
-no-bg,text-bg-media,chapter number,title,intro,subheading,body copy,nav intnro,,,0.2,
-text-image,text-image,chapter number,title,intro,subheading,body copy,nav intnro,http://localhost:3000/media/IMG_2904.jpeg,,0.2,
-text-image-video,text-image,chapter number,title,intro,subheading,body copy,nav intnro,,http://localhost:3000/media/IMG_2864_1.mp4,0.2,
-text-media-split-both,text-media-split,chapter number,title,intro,subheading,body copy,nav intnro,http://localhost:3000/media/IMG_2904.jpeg,http://localhost:3000/media/IMG_2864_1.mp4,0.2,
-text-media-split-image,text-media-split,chapter number,title,intro,subheading,body copy,nav intnro,http://localhost:3000/media/IMG_2904.jpeg,,0.2,
-text-media-split-video,text-media-split,chapter number,title,intro,subheading,body copy,nav intnro,,http://localhost:3000/media/IMG_2864_1.mp4,0.2,
-text-only,text-only,chapter number,title,intro,subheading,body copy,nav intnro,http://localhost:3000/media/IMG_2904.jpeg,,0.2,
-text-video,text-video,chapter number,title,intro,subheading,body copy,nav intnro,http://localhost:3000/media/IMG_2904.jpeg,http://localhost:3000/media/IMG_2864_1.mp4,0.2,
-chapter-title-vid,chapter-title,chapter number,chapter title template with a video bg,intro,subheading,body copy,nav intnro,,http://localhost:3000/media/IMG_2864_1.mp4,0.2,
-video-full,video-full,chapter number,title,intro,subheading,body copy,nav intnro,,http://localhost:3000/media/IMG_2864_1.mp4,0.2,
-video-inline,video-inline,chapter number,title,intro,subheading,body copy,nav intnro,http://localhost:3000/media/IMG_1832.jpeg,http://localhost:3000/media/IMG_2864_1.mp4,0.2,
-chapter-title,chapter-title,chapter number,chapter title template with a bg image,intro,subheading,body copy,nav intnro,http://localhost:3000/media/IMG_1788.jpeg,,0.2,
+slug,template,chapter_number,text_title,text_intro,text_subheading,text_bodycopy,text_navintro,image,video,bg,bg_opacity,bg_video
+001,chapter-title,chapter number,chapter title with no bg,intro,subheading,body copy,nav intnro,,,/media/IMG_0900.jpeg,0.2,""
+002,text-bg-media,chapter number,text bg media with video,intro,subheading,body copy,nav intnro,,,/media/IMG_1132.jpeg,0.2,""
+003,text-bg-media,chapter number,text bg media with video,intro,subheading,video plays seamlessly,nav intnro,,,/media/IMG_1132.jpeg,0.2,""
+004,text-bg-media,chapter number,title,intro,subheading,body copy,nav intnro,,,/media/IMG_1132.jpeg,0.2,""
+005,text-bg-media,chapter number,title,intro,subheading,body copy,nav intnro,,,/media/IMG_1803.jpeg,0.2,""
+006,text-bg-media,chapter number,title,intro,subheading,body copy,nav intnro,,,,0.2,""
+007,chapter-title,chapter number,title,intro,subheading,body copy,nav intnro,,,/media/IMG_1895.jpeg,0.2,""
+008,text-bg-media,chapter number,title,intro,subheading,body copy,nav intnro,,,/media/IMG_2042.jpeg,0.2,""
+009,text-bg-media,chapter number,title,intro,subheading,body copy,nav intnro,,,,0.2,/media/IMG_5902.mp4
+010,text-bg-media,chapter number,title,intro,subheading,body copy,nav intnro,,,,0.2,/media/IMG_5902.mp4
+011,text-bg-media,chapter number,title,intro,subheading,body copy,nav intnro,,,,0.2,/media/lockdowndanceparty.mp4
+012,chapter-title,chapter number,title,intro,subheading,body copy,nav intnro,,,,0.2,/media/lockdowndanceparty.mp4
+013,text-bg-media,chapter number,title,intro,subheading,body copy,nav intnro,,,/media/IMG_0900.jpeg,0.2,""
+014,text-bg-media,chapter number,chapter title template with a video bg,intro,subheading,body copy,nav intnro,,,/media/IMG_1132.jpeg,0.2,""
+015,text-bg-media,chapter number,title,intro,subheading,body copy,nav intnro,,,/media/IMG_1713.jpeg,0.2,""
+016,text-bg-media,chapter number,title,intro,subheading,body copy,nav intnro,,,/media/IMG_1788.jpeg,0.2,""
+017,chapter-title,chapter number,chapter title template with a bg image,intro,subheading,body copy,nav intnro,,,/media/IMG_1803.jpeg,0.2,""

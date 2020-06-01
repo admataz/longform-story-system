@@ -8,7 +8,7 @@
         toHomePx,
         toEndPx,
         toStartPx,
-    } from '../components/scrollmation.svelte'
+    } from 'svelte-scrollmation/Scrollmation.svelte'  
 
     export let scrollData
 
