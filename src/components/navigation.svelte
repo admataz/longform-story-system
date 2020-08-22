@@ -5,8 +5,8 @@
     import FbIcon from '../gfx/icons/fb.svelte'
     import TwitterIcon from '../gfx/icons/twitter.svelte'
     import DocIcon from '../gfx/icons/document.svelte'
-    import ShareIcon from '../gfx/icons/share.svelte'
-    import EmailIcon from '../gfx/icons/email.svelte'
+    // import ShareIcon from '../gfx/icons/share.svelte'
+    // import EmailIcon from '../gfx/icons/email.svelte'
 
     export let pgData, segment
     const chapterTitles = pgData
@@ -295,10 +295,6 @@
         {/each}
     </div>
     <div class="share">
-        <a href="/share" on:click|preventDefault={toggleSharePanel}>
-            <ShareIcon size="20px" />
-        </a>
 
-        <DocIcon size="24px" />
     </div>
 </div>

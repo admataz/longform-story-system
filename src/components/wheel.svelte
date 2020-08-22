@@ -25,8 +25,8 @@
 <style>
 #wheel {
   fill: #fff;
-  width: 24px;
-  height: 24px;
+  width: 48px;
+  height:48px;
 }
 </style>
 

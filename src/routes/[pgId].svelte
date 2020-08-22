@@ -169,7 +169,7 @@
         top: 110vh;
     }
     .container{
-      z-index: 100
+      width: 100%;
     }
 </style>
 
@@ -192,7 +192,8 @@
 <div class="container">
     <Scrollmation
         homepos={100}
-        endpos={10}
+        endpos={100}
+        startpos={100}
         on:next={navNext}
         on:prev={navPrev}
         on:scroll={onScroll}
@@ -202,6 +203,9 @@
         {pgId}>
         <svelte:component
             this={templates[currentPage.template]}
+            {scrollData}
             pageData={currPageContent} />
     </Scrollmation>
 </div>
+
+

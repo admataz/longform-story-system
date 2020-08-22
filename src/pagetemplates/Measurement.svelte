@@ -10,11 +10,12 @@
         toStartPx,
     } from 'svelte-scrollmation/Scrollmation.svelte'
 
+    import Wheel from '../components/wheel.svelte'
     export let pageData
     export let scrollData
     // export let isActive
 
-    $: rotatingSquareStyle = scrollData
+    $: rotatingStyle = scrollData
         ? `transform: rotate(${toRangeRatio(scrollData)}turn)`
         : ''
 
@@ -38,13 +39,8 @@
 </script>
 
 <style>
-    .bodycopy {
-        border: 1px solid #fff;
-        height: auto;
-        background-color: rgba(0, 0, 0, 0.5);
-        width: 60%;
-        margin: auto;
-        padding: 10px;
+    .contentpanel {
+      height: 210vh;
     }
     .progress-bar {
         width: 10px;
@@ -53,20 +49,11 @@
         width: 100%;
         background-color: rgba(0, 0, 0, 0.5);
     }
-
-    .rotating-square {
-        border: 2px solid #f00;
-        width: 40px;
-        height: 40px;
-        position: absolute;
-        top: 10px;
-        left: 10px;
-        font-size: 40px;
-    }
     .shapes {
         position: fixed;
         top: 0;
         left: 0;
+        height: 100%;
     }
 
     /* .parallax-container {
@@ -96,15 +83,9 @@
 </style>
 
 <div class="shapes">
-    <div class="rotating-square" style={rotatingSquareStyle} />
     <div class="progress-bar" style={progressBarStyle} />
+    <Wheel {scrollData} />
 </div>
 <div class="contentpanel">
-    {#if pageData.text_bodycopy}
-        <div class="bodycopy">
-            {@html pageData.text_bodycopy}
-        </div>
-    {:else}
-        <div />
-    {/if}
+    hi  - experimental page. 
 </div>
