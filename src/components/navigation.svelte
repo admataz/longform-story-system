@@ -1,12 +1,12 @@
 <script>
-    import { slide } from 'svelte/transition'
+    import { fade } from 'svelte/transition'
     import { createEventDispatcher } from 'svelte'
 
     import FbIcon from '../gfx/icons/fb.svelte'
     import TwitterIcon from '../gfx/icons/twitter.svelte'
     import DocIcon from '../gfx/icons/document.svelte'
-    import ShareIcon from '../gfx/icons/share.svelte'
-    import EmailIcon from '../gfx/icons/email.svelte'
+    // import ShareIcon from '../gfx/icons/share.svelte'
+    // import EmailIcon from '../gfx/icons/email.svelte'
 
     export let pgData, segment
     const chapterTitles = pgData
@@ -61,14 +61,13 @@
 
     $: currIndex = pgData.map(p => p.slug).indexOf(segment)
     $: currentPageIndex = pgData.findIndex(p => p.slug === segment)
-    // $: console.log({ currentPageIndex })
 </script>
 
 <style>
     .nav-container {
         position: absolute;
         right: 0;
-        z-index: 20;
+        z-index: 200;
         width: 80px;
         height: 100%;
         display: flex;
@@ -109,8 +108,8 @@
     }
 
     .nav-circle {
-        background-color: #fff;
         border-radius: 100%;
+        border: 2px solid #fff;
         height: 14px;
         width: 14px;
         display: block;
@@ -131,7 +130,12 @@
 
     .nav-circle.activated,
     .nav-line-progress {
-        background-color: #ffa52a;
+        background-color: #c30;
+    }
+
+    .nav-circle.current{
+        background-color: #c30;
+        border-color: #c30;
     }
 
     .nav-item:first-child {
@@ -161,15 +165,24 @@
         display: flex;
         flex-direction: row;
         position: absolute;
-        z-index: 31;
+        z-index: 1000;
     }
     .nav-popup-preview {
         width: 300px;
-        background-color: #fff;
-        color: #666;
+        background-color: rgba(255, 255, 255, 0.3);
+        color: #000;
         padding: 20px;
-        border-left: 8px solid #ffa52a;
+        border-radius: 20px;
         font-size: 14px;
+        z-index:1000;
+    }
+    .arrow-right {
+        width: 0;
+        height: 0;
+        border-top: 12px solid transparent;
+        border-bottom: 12px solid transparent;
+        border-left: 12px solid rgba(255, 255, 255, 0.3);
+        margin-top: 20px;
     }
 
     .preview-chapter-number {
@@ -198,26 +211,16 @@
         display: flex;
         flex-direction: row;
         position: absolute;
-        z-index: 50;
+        z-index: 1000;
     }
     .share-popup {
         width: 200px;
         background-color: rgba(79, 76, 75, 0.8);
         color: #fff;
         padding: 20px;
-        border-left: 8px solid #ffa52a;
         font-size: 14px;
         display: flex;
         justify-content: space-between;
-    }
-
-    .arrow-right {
-        width: 0;
-        height: 0;
-        border-top: 12px solid transparent;
-        border-bottom: 12px solid transparent;
-        border-left: 12px solid #fff;
-        margin-top: 20px;
     }
 </style>
 
@@ -225,11 +228,11 @@
     <div
         class="nav-popup-wrapper"
         style="top:{previewTop}px; right:{previewRight}px"
-        transition:slide>
+        transition:fade>
         <div class="nav-popup-preview">
             {#if preview.chapter_number}
                 <div class="preview-chapter-number">
-                     {preview.chapter_number}
+                    {preview.chapter_number}
                 </div>
             {/if}
 
@@ -251,7 +254,7 @@
     <div
         class="share-popup-wrapper"
         style="top:{shareTop}px; right:{shareRight}px"
-        transition:slide>
+        transition:fade>
         <div class="share-popup">
             <FbIcon />
             <TwitterIcon />
@@ -264,14 +267,13 @@
 {/if}
 
 <div class="nav-container">
-    <div class="nav-heading">menu</div>
     <div class="navigation">
 
         {#each chapterTitles as pg}
             <div class="nav-item">
 
                 <a
-                    class="nav-circle {pg.index <= currIndex && 'activated'}"
+                    class="nav-circle {pg.index <= currIndex && 'activated'}  {pg.index === currIndex && 'current'}"
                     href="/{pg.slug}"
                     on:click|preventDefault={() => {
                         onClickItem(pg.slug)
@@ -293,10 +295,6 @@
         {/each}
     </div>
     <div class="share">
-        <a href="/share" on:click|preventDefault={toggleSharePanel}>
-            <ShareIcon size="20px" />
-        </a>
-        
-        <DocIcon size="24px" />
+
     </div>
 </div>

@@ -1,7 +1,5 @@
 <script>
     export let pageData
-    export let scrollData
-    export let isActive
     import {
         toHomeRatio,
         toStartRatio,
@@ -11,18 +9,19 @@
         toHomePx,
         toEndPx,
         toStartPx,
-    } from '../components/scrollmation.svelte'
+    } from 'svelte-scrollmation/Scrollmation.svelte'
 
-    const {
-        chapter_number,
-        text_title,
-        text_subheading,
-        text_intro,
-        text_bodycopy,
-        image,
-        video,
-        bg_opacity,
-    } = pageData
+    $: slug = pageData.slug
+    $: template = pageData.template
+    $: chapter_number = pageData.chapter_number
+    $: text_title = pageData.text_title
+    $: text_intro = pageData.text_intro
+    $: text_subheading = pageData.text_subheading
+    $: text_bodycopy = pageData.text_bodycopy
+    $: text_navintro = pageData.text_navintro
+    $: image = pageData.image
+    $: video = pageData.video
+    $: bg_opacity = pageData.bg_opacity
 
 </script>
 
@@ -33,8 +32,6 @@
         height: 300px;
         flex-direction: column;
         justify-content: center;
-        /* border:10px solid red;
-        background: #fff; */
     }
 
     video {
@@ -46,9 +43,6 @@
 
 
 <div class="full-screen media-video">
-    <!-- <video autoplay={isActive} bind:paused={videoPaused} controls>
-        <source src={video} />
-    </video> -->
 
 </div>
 

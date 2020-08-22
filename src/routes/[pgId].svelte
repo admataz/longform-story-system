@@ -1,8 +1,7 @@
 <script context="module">
     export async function preload({ params, path, query }) {
-    // const res = await this.fetch(`${params.pgId}.json`)
-    // const currentPageData = await res.json()
-   
+        // const res = await this.fetch(`${params.pgId}.json`)
+        // const currentPageData = await res.json(
         return {
             // currentPageData,
             pgId: params.pgId,
@@ -15,7 +14,8 @@
     import { goto, prefetch } from '@sapper/app'
     import marked from 'marked'
     import { fade } from 'svelte/transition'
-
+    import { tweened } from 'svelte/motion'
+    import { cubicOut } from 'svelte/easing'
     import { clickNavTo } from '../store/'
     import Scrollmation, {
         toHomeRatio,
@@ -26,7 +26,8 @@
         toHomePx,
         toEndPx,
         toStartPx,
-    } from '../components/scrollmation.svelte'
+    } from 'svelte-scrollmation/Scrollmation.svelte'
+
     import BgMedia from '../pagetemplates/BgMedia.svelte'
     import ChapterTitle from '../pagetemplates/ChapterTitle.svelte'
     import TextMediaSplit from '../pagetemplates/TextMediaSplit.svelte'
@@ -39,14 +40,22 @@
     import Wheel from '../components/wheel.svelte'
     import VideoInline from '../pagetemplates/VideoInline.svelte'
 
+    import Bg from '../components/bg.svelte'
+    import BgVideo from '../components/bg-video.svelte'
+
     const pages = getContext('pages')
-    export let pgId, isPrevNav
+    const pgData = getContext('pgData')
+
+    export let pgId
+    // export let currentPageData
+    export let isprevnav = false
     let canNav = true
-    let scrollToPosition = null
+    let scrolltoposition = null
     let scrollData
     let lastPage = null
     let okToNav = false
     let navTo = null
+    let doFade = false
 
     const templates = {
         'chapter-title': ChapterTitle,
@@ -56,6 +65,7 @@
         'text-image': TextImage,
         'text-video': TextVideo,
         'video-inline': VideoInline,
+        'text-only': TextOnly,
         measurement: Measurement,
     }
 
@@ -71,7 +81,7 @@
     }
 
     function scrollTo(pos) {
-        scrollToPosition = pos
+        scrolltoposition = pos
     }
 
     function onKeyDown({ key }) {
@@ -96,12 +106,10 @@
         $clickNavTo = null
     }
 
-    function navNext() {
-        if (!okToNav) {
-            return
-        }
-        isPrevNav = false
-        scrollToPosition = null
+    async function navNext(e) {
+        isprevnav = false
+        scrolltoposition = null
+
         if (navTo) {
             gotoPage(navTo)
         } else if (nextPage) {
@@ -109,12 +117,12 @@
         }
     }
 
-    function navPrev() {
+    async function navPrev() {
         if (!okToNav) {
             return
         }
-        isPrevNav = !!$clickNavTo ? false : true
-        scrollToPosition = null
+        isprevnav = !!$clickNavTo ? false : true
+        scrolltoposition = null
         if (navTo) {
             gotoPage(navTo)
         } else if (prevPage) {
@@ -145,83 +153,59 @@
     function onScroll(evt) {
         scrollData = evt.detail
     }
+
     $: currentPage = pages[pgId]
     $: nextPage = currentPage ? currentPage._nav.next : null
     $: prevPage = currentPage ? currentPage._nav.prev : null
     $: pagesQueue = [pgId]
-    // $: changeBg = shouldSwitchBg(lastPage, currentPage)
-  
-    $: currPageContent = formatPageData(pages[pgId])
-    // $: nextNav = $clickNavTo
-    $: doClick = $clickNavTo ? onClickNav($clickNavTo): null
+    $: currPageContent = formatPageData(currentPage)
+    $: doClick = $clickNavTo ? onClickNav($clickNavTo) : null
 </script>
 
 <style>
-    .nav {
+    .static-content {
         position: absolute;
-        top: 0;
-        z-index: 1000;
+        z-index: -1;
+        top: 110vh;
     }
-    .static-content{
-      position: absolute;
-      z-index: -1;
-      top: 110vh;
+    .container{
+      width: 100%;
     }
 </style>
 
 <svelte:window on:keydown={onKeyDown} />
 
-<div class="wheel1">
-    <a href={prevPage} on:click|preventDefault={onClickPrev} rel="prefetch">
-          
-    </a>
-</div>
+<svelte:head>
+    <title>{currPageContent.text_title}</title>
+</svelte:head>
 
-<div class="wheel2">
-    <a href={nextPage} on:click|preventDefault={onClickNext} rel="prefetch">
-         
-    </a>
-</div>
 <div class="static-content">
-<TextOnly pageData={currPageContent} isActive={false} />
+    <TextOnly pageData={currPageContent} />
 </div>
 
-<div class="bgitems">
-    {#each Object.keys(pages) as p}
-        {#if pagesQueue.includes(p)}
-            <div class="bg-item {p === pgId ? 'active' : ''}" id="{`bg-${p}`}">
-                <div transition:fade={{ delay: 0, duration: 800 }}>
-                    <BgMedia
-                        pageData={formatPageData(pages[p])}
-                        isActive={p === pgId}
-                        on:next={onClickNext}
-                        on:prev={onClickPrev} />
-                </div>
-            </div>
-        {/if}
-    {/each}
+{#if currPageContent.bg}
+    <Bg {pgId} {pgData} />
+{:else if currPageContent.bg_video}
+    <BgVideo {pgId} {pgData} />
+{/if}
+
+<div class="container">
+    <Scrollmation
+        homepos={100}
+        endpos={100}
+        startpos={100}
+        on:next={navNext}
+        on:prev={navPrev}
+        on:scroll={onScroll}
+        on:home={navHome}
+        {isprevnav}
+        {scrolltoposition}
+        {pgId}>
+        <svelte:component
+            this={templates[currentPage.template]}
+            {scrollData}
+            pageData={currPageContent} />
+    </Scrollmation>
 </div>
-<Scrollmation
-    on:next={navNext}
-    on:prev={navPrev}
-    on:scroll={onScroll}
-    on:home={navHome}
-    {isPrevNav}
-    {scrollToPosition}
-    {pgId}>
-    <!-- TODO: investigate useing let: to pass props values back up from the slot component -->
-    <div slot="fg">
 
-        {#each Object.keys(pages) as p}
-            {#if pagesQueue.includes(p)}
-                <svelte:component
-                    this={templates[currentPage.template]}
-                    pageData={currPageContent}
-                    {scrollData}
-                    isActive={true} />
-            {/if}
-        {/each}
-    </div>
-
-</Scrollmation>
 

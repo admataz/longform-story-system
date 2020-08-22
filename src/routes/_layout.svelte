@@ -33,17 +33,16 @@
         $clickNavTo = evt.detail
     }
     setContext('pages', pages)
+    setContext('pgData', pgData)
 </script>
 
 <style>
-main {
-  display:flex;
-  
-}
-
+    main {
+        display: flex;
+    }
 </style>
 
-    <main>
-        <slot>some fallback content</slot>
-        <Nav {pgData} {segment} on:clickNav={onClickNav} />
-    </main>
+<main>
+    <slot>some fallback content</slot>
+    <Nav {pgData} {segment} on:clickNav={onClickNav} />
+</main>
