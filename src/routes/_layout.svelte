@@ -14,7 +14,7 @@
             acc[page.slug] = p
             return acc
         }, {})
-
+        
         return {
             pages,
             pgData,
@@ -44,5 +44,5 @@
 
 <main>
     <slot>some fallback content</slot>
-    <Nav {pgData} {segment} on:clickNav={onClickNav} />
+    <Nav {pgData} {pages} {segment} on:clickNav={onClickNav} />
 </main>

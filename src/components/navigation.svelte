@@ -8,7 +8,7 @@
     // import ShareIcon from '../gfx/icons/share.svelte'
     // import EmailIcon from '../gfx/icons/email.svelte'
 
-    export let pgData, segment
+    export let pgData, pages, segment
     const chapterTitles = pgData
         .filter(p => p.template === 'chapter-title')
         .map((p, i, a) => ({
@@ -55,12 +55,13 @@
         }
 
         const currChapterPage = currChildIndex - chapterIndex
-
         return Math.ceil((currChapterPage / childCount) * 100)
     }
 
     $: currIndex = pgData.map(p => p.slug).indexOf(segment)
     $: currentPageIndex = pgData.findIndex(p => p.slug === segment)
+    $: nextSlug = pages[segment] ? pages[segment]._nav.next: null
+    $: prevSlug = pages[segment] ? pages[segment]._nav.prev: null
 </script>
 
 <style>
@@ -78,6 +79,12 @@
         color: #fff;
         flex-basis: 100%;
         padding: 20px 0;
+    }
+    .nav-prev-next-button {
+        background: transparent;
+        border: none;
+        color: #fff;
+        font-size: 18px;
     }
 
     .nav-heading {
@@ -133,7 +140,7 @@
         background-color: #c30;
     }
 
-    .nav-circle.current{
+    .nav-circle.current {
         background-color: #c30;
         border-color: #c30;
     }
@@ -174,7 +181,7 @@
         padding: 20px;
         border-radius: 20px;
         font-size: 14px;
-        z-index:1000;
+        z-index: 1000;
     }
     .arrow-right {
         width: 0;
@@ -273,7 +280,8 @@
             <div class="nav-item">
 
                 <a
-                    class="nav-circle {pg.index <= currIndex && 'activated'}  {pg.index === currIndex && 'current'}"
+                    class="nav-circle {pg.index <= currIndex && 'activated'}
+                    {pg.index === currIndex && 'current'}"
                     href="/{pg.slug}"
                     on:click|preventDefault={() => {
                         onClickItem(pg.slug)
@@ -294,7 +302,25 @@
             </div>
         {/each}
     </div>
-    <div class="share">
-
+    <div>
+        {#if prevSlug}
+        <button
+            on:click|preventDefault={() => {
+                onClickItem(prevSlug)
+            }}
+            class="nav-prev-next-button">
+            &ShortLeftArrow;
+        </button>
+        {/if}
+        {#if nextSlug}
+        <button
+            on:click|preventDefault={() => {
+                onClickItem(nextSlug)
+            }}
+            class="nav-prev-next-button">
+           &ShortRightArrow;
+        </button>
+        {/if}
     </div>
+    <div class="share" />
 </div>

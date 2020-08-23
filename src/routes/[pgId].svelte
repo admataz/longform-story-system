@@ -1,9 +1,6 @@
 <script context="module">
     export async function preload({ params, path, query }) {
-        // const res = await this.fetch(`${params.pgId}.json`)
-        // const currentPageData = await res.json(
         return {
-            // currentPageData,
             pgId: params.pgId,
         }
     }
@@ -16,7 +13,6 @@
     import { fade } from 'svelte/transition'
     import { tweened } from 'svelte/motion'
     import { cubicOut } from 'svelte/easing'
-    import { clickNavTo } from '../store/'
     import Scrollmation, {
         toHomeRatio,
         toStartRatio,
@@ -26,8 +22,11 @@
         toHomePx,
         toEndPx,
         toStartPx,
-    } from 'svelte-scrollmation/Scrollmation.svelte'
+    } from 'svelte-scrollmation/scrollmation.svelte'
 
+    import { clickNavTo } from '../store/'
+
+    // page layout templates
     import BgMedia from '../pagetemplates/BgMedia.svelte'
     import ChapterTitle from '../pagetemplates/ChapterTitle.svelte'
     import TextMediaSplit from '../pagetemplates/TextMediaSplit.svelte'
@@ -47,7 +46,6 @@
     const pgData = getContext('pgData')
 
     export let pgId
-    // export let currentPageData
     export let isprevnav = false
     let canNav = true
     let scrolltoposition = null
@@ -56,6 +54,9 @@
     let okToNav = false
     let navTo = null
     let doFade = false
+    let TRANSITON_DURATION = 900 // TODO: look at ways to make this configurable from loaded content
+
+    let waitTimer = null
 
     const templates = {
         'chapter-title': ChapterTitle,
@@ -86,11 +87,17 @@
 
     function onKeyDown({ key }) {
         if (key === 'ArrowRight' || key === 'ArrowDown') {
+            if(!nextPage){
+              return
+            }
             okToNav = true
             navTo = nextPage
             scrollTo('end')
         }
         if (key === 'ArrowLeft' || key === 'ArrowUp') {
+          if(!prevPage){
+              return
+            }
             okToNav = true
             navTo = prevPage
             scrollTo('start')
@@ -98,12 +105,24 @@
     }
 
     function gotoPage(pg) {
+        // TODO: This is a hack and neeeds more sophisticated thinking.
+        // to stop skipping pages when content dimensions change between loads...
+        if (!okToNav) {
+            return
+        }
+
+        clearTimeout(waitTimer)
         lastPage = currentPage
         currentPage = pages[pg]
         okToNav = false
         goto(pg)
         navTo = null
         $clickNavTo = null
+
+        // to avoid getting trapped on a page if home location is never reached
+        waitTimer = setTimeout(() => {
+            okToNav = true
+        }, TRANSITON_DURATION)
     }
 
     async function navNext(e) {
@@ -117,15 +136,13 @@
         }
     }
 
-    async function navPrev() {
-        if (!okToNav) {
-            return
-        }
-        isprevnav = !!$clickNavTo ? false : true
+    async function navPrev(e) {
         scrolltoposition = null
+        isprevnav = true
         if (navTo) {
             gotoPage(navTo)
         } else if (prevPage) {
+            isprevnav = true
             gotoPage(prevPage)
         }
     }
@@ -135,11 +152,17 @@
     }
 
     function onClickPrev() {
+        if(!prevPage){
+          return
+        }
         okToNav = true
         scrollTo('start')
     }
 
     function onClickNext() {
+        if(!nextPage){
+          return
+        }
         okToNav = true
         scrollTo('end')
     }
@@ -147,7 +170,11 @@
     function onClickNav(to) {
         okToNav = true
         navTo = to
-        scrollTo('start')
+        if (Number(pgId) < Number(navTo)) {
+            scrollTo('end')
+        } else {
+            scrollTo('start')
+        }
     }
 
     function onScroll(evt) {
@@ -168,8 +195,8 @@
         z-index: -1;
         top: 110vh;
     }
-    .container{
-      width: 100%;
+    .container {
+        width: 100%;
     }
 </style>
 
@@ -194,6 +221,7 @@
         homepos={100}
         endpos={100}
         startpos={100}
+        duration={TRANSITON_DURATION}
         on:next={navNext}
         on:prev={navPrev}
         on:scroll={onScroll}
@@ -207,5 +235,3 @@
             pageData={currPageContent} />
     </Scrollmation>
 </div>
-
-
