@@ -8,7 +8,7 @@
         toHomePx,
         toEndPx,
         toStartPx,
-    } from 'svelte-scrollmation/Scrollmation.svelte'
+    } from 'svelte-scrollmation/scrollmation.svelte'
 
     import Wheel from '../components/wheel.svelte'
     export let pageData

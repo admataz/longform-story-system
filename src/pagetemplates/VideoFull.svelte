@@ -9,7 +9,7 @@
         toHomePx,
         toEndPx,
         toStartPx,
-    } from 'svelte-scrollmation/Scrollmation.svelte'
+    } from 'svelte-scrollmation/scrollmation.svelte'
 
     $: slug = pageData.slug
     $: template = pageData.template
