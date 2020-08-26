@@ -19,12 +19,11 @@
 </style>
 
 <div class="bgitems">
-    {#each pgData as pg}
-        {#if pg.slug === pgId && pg.bg}
-            <div
-                transition:fade={{ duration: 2000 }}
-                class="bgitem"
-                style="background-image: url({pg.bg}); opacity: {pg.bg_opacity};" />
-        {/if}
+<!-- the recommended approach to forcing a transition: https://stackoverflow.com/a/61838756 -->
+    {#each [pgData] as pg (pg)}
+        <div
+            transition:fade={{ duration: 2000 }}
+            class="bgitem"
+            style="background-image: url({pg.bg}); opacity: {pg.bg_opacity};" />
     {/each}
 </div>

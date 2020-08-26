@@ -1,237 +1,126 @@
 <script context="module">
     export async function preload({ params, path, query }) {
+        const res = await this.fetch(`${params.pgId}.json`)
+        const pageData = await res.json()
         return {
+            pageData,
             pgId: params.pgId,
         }
     }
 </script>
 
 <script>
-    import { getContext } from 'svelte'
     import { goto, prefetch } from '@sapper/app'
-    import marked from 'marked'
-    import { fade } from 'svelte/transition'
-    import { tweened } from 'svelte/motion'
-    import { cubicOut } from 'svelte/easing'
-    import Scrollmation, {
-        toHomeRatio,
-        toStartRatio,
-        toEndRatio,
-        toRangeRatio,
-        fullRangePx,
-        toHomePx,
-        toEndPx,
-        toStartPx,
-    } from 'svelte-scrollmation/scrollmation.svelte'
-
-    import { clickNavTo } from '../store/'
-
-    // page layout templates
-    import BgMedia from '../pagetemplates/BgMedia.svelte'
-    import ChapterTitle from '../pagetemplates/ChapterTitle.svelte'
-    import TextMediaSplit from '../pagetemplates/TextMediaSplit.svelte'
-    import VideoFull from '../pagetemplates/VideoFull.svelte'
-    import TextBgMedia from '../pagetemplates/TextBgMedia.svelte'
-    import TextImage from '../pagetemplates/TextImage.svelte'
-    import TextVideo from '../pagetemplates/TextVideo.svelte'
     import TextOnly from '../pagetemplates/TextOnly.svelte'
-    import Measurement from '../pagetemplates/Measurement.svelte'
-    import Wheel from '../components/wheel.svelte'
-    import VideoInline from '../pagetemplates/VideoInline.svelte'
-
+    import Scroller from '../pagetemplates/Scroller.svelte'
     import Bg from '../components/bg.svelte'
     import BgVideo from '../components/bg-video.svelte'
-
-    const pages = getContext('pages')
-    const pgData = getContext('pgData')
-
+    import FullscreenVideo from '../components/fullscreen-video.svelte'
+    import { clickNavTo } from '../store/'
+    
     export let pgId
-    export let isprevnav = false
-    let canNav = true
-    let scrolltoposition = null
-    let scrollData
-    let lastPage = null
-    let okToNav = false
-    let navTo = null
-    let doFade = false
-    let TRANSITON_DURATION = 900 // TODO: look at ways to make this configurable from loaded content
+    export let pageData
 
+    const linkPrefix = ''
+    let navTo = null
+    let isprevnav = false
+    let scrollContentComponent, videoContentComponent
+    let okToNav = true
     let waitTimer = null
 
-    const templates = {
-        'chapter-title': ChapterTitle,
-        'text-media-split': TextMediaSplit,
-        'video-full': VideoFull,
-        'text-bg-media': TextBgMedia,
-        'text-image': TextImage,
-        'text-video': TextVideo,
-        'video-inline': VideoInline,
-        'text-only': TextOnly,
-        measurement: Measurement,
-    }
-
-    function formatPageData(page) {
-        if (!page) {
-            return null
-        }
-        return {
-            ...page,
-            text_intro: marked(page.text_intro || ''),
-            text_bodycopy: marked(page.text_bodycopy || ''),
-        }
-    }
-
-    function scrollTo(pos) {
-        scrolltoposition = pos
-    }
-
     function onKeyDown({ key }) {
+      const currComponent =
+          pageData.template === 'video-full'
+              ? videoContentComponent
+              : scrollContentComponent
         if (key === 'ArrowRight' || key === 'ArrowDown') {
-            if(!nextPage){
-              return
+            if (!pageData._nav.next) {
+                return
             }
-            okToNav = true
-            navTo = nextPage
-            scrollTo('end')
+            currComponent.next()
         }
         if (key === 'ArrowLeft' || key === 'ArrowUp') {
-          if(!prevPage){
-              return
+            if (!pageData._nav.prev) {
+                return
             }
-            okToNav = true
-            navTo = prevPage
-            scrollTo('start')
+            currComponent.prev()
         }
     }
 
     function gotoPage(pg) {
-        // TODO: This is a hack and neeeds more sophisticated thinking.
-        // to stop skipping pages when content dimensions change between loads...
         if (!okToNav) {
             return
         }
-
         clearTimeout(waitTimer)
-        lastPage = currentPage
-        currentPage = pages[pg]
         okToNav = false
-        goto(pg)
+        goto(`${linkPrefix}${pg}`)
         navTo = null
         $clickNavTo = null
-
-        // to avoid getting trapped on a page if home location is never reached
         waitTimer = setTimeout(() => {
             okToNav = true
-        }, TRANSITON_DURATION)
+        }, 100)
     }
 
-    async function navNext(e) {
+    function navNext(e) {
         isprevnav = false
-        scrolltoposition = null
-
-        if (navTo) {
-            gotoPage(navTo)
-        } else if (nextPage) {
-            gotoPage(nextPage)
-        }
+        gotoPage(pageData._nav.next)
     }
 
-    async function navPrev(e) {
-        scrolltoposition = null
+    function navPrev(e) {
         isprevnav = true
-        if (navTo) {
-            gotoPage(navTo)
-        } else if (prevPage) {
-            isprevnav = true
-            gotoPage(prevPage)
-        }
+        gotoPage(pageData._nav.prev)
     }
 
-    function navHome(e) {
-        okToNav = true
-    }
-
-    function onClickPrev() {
-        if(!prevPage){
-          return
-        }
-        okToNav = true
-        scrollTo('start')
-    }
-
-    function onClickNext() {
-        if(!nextPage){
-          return
-        }
-        okToNav = true
-        scrollTo('end')
-    }
+    function navHome(e) {}
 
     function onClickNav(to) {
+      const currComponent =
+        pageData.template === 'video-full'
+            ? videoContentComponent
+            : scrollContentComponent
         okToNav = true
         navTo = to
         if (Number(pgId) < Number(navTo)) {
-            scrollTo('end')
+            currComponent.toBeforeEnd().then(() => gotoPage(to))
         } else {
-            scrollTo('start')
+            currComponent.toBeforeStart().then(() => gotoPage(to))
         }
     }
 
-    function onScroll(evt) {
-        scrollData = evt.detail
-    }
-
-    $: currentPage = pages[pgId]
-    $: nextPage = currentPage ? currentPage._nav.next : null
-    $: prevPage = currentPage ? currentPage._nav.prev : null
-    $: pagesQueue = [pgId]
-    $: currPageContent = formatPageData(currentPage)
-    $: doClick = $clickNavTo ? onClickNav($clickNavTo) : null
+    $: if($clickNavTo) onClickNav($clickNavTo)
 </script>
 
 <style>
-    .static-content {
-        position: absolute;
-        z-index: -1;
-        top: 110vh;
-    }
     .container {
-        width: 100%;
+        height: 100%;
     }
 </style>
 
 <svelte:window on:keydown={onKeyDown} />
 
 <svelte:head>
-    <title>{currPageContent.text_title}</title>
+    <title>{pageData.text_title}</title>
 </svelte:head>
 
-<div class="static-content">
-    <TextOnly pageData={currPageContent} />
-</div>
-
-{#if currPageContent.bg}
-    <Bg {pgId} {pgData} />
-{:else if currPageContent.bg_video}
-    <BgVideo {pgId} {pgData} />
+{#if pageData.bg}
+    <Bg {pgId} pgData={pageData} />
+{:else if pageData.bg_video}
+    <BgVideo {pgId} pgData={pageData} />
 {/if}
 
-<div class="container">
-    <Scrollmation
-        homepos={100}
-        endpos={100}
-        startpos={100}
-        duration={TRANSITON_DURATION}
+{#if pageData.template === 'video-full'}
+    <FullscreenVideo
+        {pageData}
         on:next={navNext}
         on:prev={navPrev}
-        on:scroll={onScroll}
+        bind:this={videoContentComponent} />
+{/if}
+<div class="container">
+    <Scroller
+        {pageData}
+        bind:this={scrollContentComponent}
+        on:next={navNext}
+        on:prev={navPrev}
         on:home={navHome}
-        {isprevnav}
-        {scrolltoposition}
-        {pgId}>
-        <svelte:component
-            this={templates[currentPage.template]}
-            {scrollData}
-            pageData={currPageContent} />
-    </Scrollmation>
+        {isprevnav} />
 </div>

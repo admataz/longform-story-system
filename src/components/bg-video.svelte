@@ -31,20 +31,21 @@
 </style>
 
 <div class="bgitems">
-        {#each pgData as pg}
-            {#if pg.slug === pgId && pg.bg_video}
-                <div class="media-video" transition:fade={{ duration: 2000 }} style="opacity:{pg.bg_opacity}">
-                    <video
-                        preload="auto"
-                        controls={false}
-                        loop={true}
-                        autoplay={true}
-                        muted={true}>
-                        <source src={pg.bg_video} />
-                    </video>
-                </div>
-            {/if}
-        {/each}
-    
+<!-- the recommended approach to forcing a transition: https://stackoverflow.com/a/61838756 -->
+    {#each [pgData] as pg (pg)} 
+        <div
+            class="media-video"
+            transition:fade={{ duration: 2000 }}
+            style="opacity:{pg.bg_opacity}">
+            <video
+                preload="auto"
+                controls={false}
+                loop={true}
+                autoplay={true}
+                muted={true}>
+                <source src={pg.bg_video} />
+            </video>
+        </div>
+    {/each}
 
 </div>

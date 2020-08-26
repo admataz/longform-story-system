@@ -1,6 +1,7 @@
 <script>
     import { fade } from 'svelte/transition'
     import { createEventDispatcher } from 'svelte'
+    import { goto, prefetch } from '@sapper/app'
 
     import FbIcon from '../gfx/icons/fb.svelte'
     import TwitterIcon from '../gfx/icons/twitter.svelte'
@@ -60,8 +61,8 @@
 
     $: currIndex = pgData.map(p => p.slug).indexOf(segment)
     $: currentPageIndex = pgData.findIndex(p => p.slug === segment)
-    $: nextSlug = pages[segment] ? pages[segment]._nav.next: null
-    $: prevSlug = pages[segment] ? pages[segment]._nav.prev: null
+    $: nextSlug = pages[segment] ? pages[segment]._nav.next : null
+    $: prevSlug = pages[segment] ? pages[segment]._nav.prev : null
 </script>
 
 <style>
@@ -85,6 +86,7 @@
         border: none;
         color: #fff;
         font-size: 18px;
+        text-decoration: none;
     }
 
     .nav-heading {
@@ -283,6 +285,7 @@
                     class="nav-circle {pg.index <= currIndex && 'activated'}
                     {pg.index === currIndex && 'current'}"
                     href="/{pg.slug}"
+                    rel="prefetch"
                     on:click|preventDefault={() => {
                         onClickItem(pg.slug)
                     }}
@@ -304,22 +307,26 @@
     </div>
     <div>
         {#if prevSlug}
-        <button
-            on:click|preventDefault={() => {
-                onClickItem(prevSlug)
-            }}
-            class="nav-prev-next-button">
-            &ShortLeftArrow;
-        </button>
+            <a
+                href={prevSlug}
+                rel="prefetch"
+                on:click|preventDefault={() => {
+                    onClickItem(prevSlug)
+                }}
+                class="nav-prev-next-button">
+                &ShortLeftArrow;
+            </a>
         {/if}
         {#if nextSlug}
-        <button
-            on:click|preventDefault={() => {
-                onClickItem(nextSlug)
-            }}
-            class="nav-prev-next-button">
-           &ShortRightArrow;
-        </button>
+            <a
+                href={nextSlug}
+                rel="prefetch"
+                on:click|preventDefault={() => {
+                    onClickItem(nextSlug)
+                }}
+                class="nav-prev-next-button">
+                &ShortRightArrow;
+            </a>
         {/if}
     </div>
     <div class="share" />
