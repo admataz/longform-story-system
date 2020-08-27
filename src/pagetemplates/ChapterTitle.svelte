@@ -1,12 +1,14 @@
 <script>
+  import marked from 'marked'
+
   export let pageData
   $: slug = pageData.slug
   $: template = pageData.template
   $: chapter_number = pageData.chapter_number
   $: text_title = pageData.text_title
-  $: text_intro = pageData.text_intro
   $: text_subheading = pageData.text_subheading
-  $: text_bodycopy = pageData.text_bodycopy
+  $: text_bodycopy = marked(pageData.text_bodycopy)
+  $: text_intro = marked(pageData.text_intro)
   $: text_navintro = pageData.text_navintro
   $: image = pageData.image
   $: video = pageData.video

@@ -1,5 +1,6 @@
 <script>
     import {  createEventDispatcher, beforeUpdate, afterUpdate } from 'svelte'
+    import marked from 'marked'
 
     export let pageData
     // export let bgOpacity = 1
@@ -24,8 +25,8 @@
     $: chapter_number = pageData.chapter_number
     $: text_title = pageData.text_title
     $: text_subheading = pageData.text_subheading
-    $: text_intro = pageData.text_intro
-    $: text_bodycopy = pageData.text_bodycopy
+    $: text_bodycopy = marked(pageData.text_bodycopy)
+    $: text_intro = marked(pageData.text_intro)
     $: image = pageData.image
     $: video = pageData.video
     $: bg_opacity = pageData.bg_opacity

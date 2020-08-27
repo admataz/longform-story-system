@@ -267,7 +267,6 @@
         <div class="share-popup">
             <FbIcon />
             <TwitterIcon />
-            <EmailIcon />
         </div>
         <div
             class="arrow-right"
