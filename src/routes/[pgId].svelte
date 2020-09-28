@@ -15,39 +15,49 @@
     import Scroller from '../pagetemplates/Scroller.svelte'
     import Bg from '../components/bg.svelte'
     import BgVideo from '../components/bg-video.svelte'
-    import FullscreenVideo from '../components/fullscreen-video.svelte'
     import { clickNavTo } from '../store/'
-    
+
+    import FullscreenVideo from '../components/fullscreen-video.svelte'
+    import ChapterTitle from '../pagetemplates/ChapterTitle.svelte'
+    import TextBgMedia from '../pagetemplates/TextBgMedia.svelte'
+    import SeaBoatNet from '../pagetemplates/SeaBoatNet.svelte'
+
+    const templates = {
+        'chapter-title': ChapterTitle,
+        'text-bg-media': TextBgMedia,
+        'video-full': FullscreenVideo,
+        'sea-boat-net': SeaBoatNet,
+    }
+
     export let pgId
     export let pageData
 
     const linkPrefix = ''
     let navTo = null
     let isprevnav = false
-    let scrollContentComponent, videoContentComponent
+    let currentTemplateComponent
     let okToNav = true
     let waitTimer = null
 
     function onKeyDown({ key }) {
-      const currComponent =
-          pageData.template === 'video-full'
-              ? videoContentComponent
-              : scrollContentComponent
         if (key === 'ArrowRight' || key === 'ArrowDown') {
             if (!pageData._nav.next) {
                 return
             }
-            currComponent.next()
+            currentTemplateComponent.next()
         }
         if (key === 'ArrowLeft' || key === 'ArrowUp') {
             if (!pageData._nav.prev) {
                 return
             }
-            currComponent.prev()
+            currentTemplateComponent.prev()
         }
     }
 
     function gotoPage(pg) {
+        if(!pg){
+          return
+        }
         if (!okToNav) {
             return
         }
@@ -63,36 +73,38 @@
 
     function navNext(e) {
         isprevnav = false
+        console.log('navNext')
         gotoPage(pageData._nav.next)
     }
 
     function navPrev(e) {
         isprevnav = true
+
+        console.log('navPrev')
         gotoPage(pageData._nav.prev)
     }
 
     function navHome(e) {}
 
     function onClickNav(to) {
-      const currComponent =
-        pageData.template === 'video-full'
-            ? videoContentComponent
-            : scrollContentComponent
         okToNav = true
         navTo = to
         if (Number(pgId) < Number(navTo)) {
-            currComponent.toBeforeEnd().then(() => gotoPage(to))
+            currentTemplateComponent.toBeforeEnd().then(() => gotoPage(to))
         } else {
-            currComponent.toBeforeStart().then(() => gotoPage(to))
+            currentTemplateComponent.toBeforeStart().then(() => gotoPage(to))
         }
     }
 
-    $: if($clickNavTo) onClickNav($clickNavTo)
+    $: if ($clickNavTo) onClickNav($clickNavTo)
 </script>
 
 <style>
     .container {
         height: 100%;
+        width: 100%;
+        position: absolute;
+        z-index: 20;
     }
 </style>
 
@@ -108,19 +120,13 @@
     <BgVideo {pgId} pgData={pageData} />
 {/if}
 
-{#if pageData.template === 'video-full'}
-    <FullscreenVideo
-        {pageData}
-        on:next={navNext}
-        on:prev={navPrev}
-        bind:this={videoContentComponent} />
-{/if}
 <div class="container">
-    <Scroller
+    <svelte:component
+        this={templates[pageData.template]}
         {pageData}
-        bind:this={scrollContentComponent}
         on:next={navNext}
         on:prev={navPrev}
+        {isprevnav}
         on:home={navHome}
-        {isprevnav} />
+        bind:this={currentTemplateComponent} />
 </div>

@@ -1,5 +1,5 @@
 <script context="module">
-    import SeaBoatNet from '../pages/sea-boat-net/SeaBoatNet.svelte'
+    import SeaBoatNet from '../pagetemplates/SeaBoatNet.svelte'
     
 </script>
 
