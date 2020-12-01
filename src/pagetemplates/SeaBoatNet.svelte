@@ -1,14 +1,14 @@
 <script>
     import { onMount, createEventDispatcher } from 'svelte'
+    import { fade } from 'svelte/transition'
+    import { gsap } from 'gsap'
+    import { ScrollTrigger } from 'gsap/ScrollTrigger'
+    import { ScrollToPlugin } from 'gsap/ScrollToPlugin'
+
     import Boat from './sea-boat-net/boat.svg.svelte'
     import Fishet from './sea-boat-net/fishnet.svg.svelte'
     import Wave from './sea-boat-net/wave.svg.svelte'
     import Hook from './sea-boat-net/hook.svg.svelte'
-    import { fade } from 'svelte/transition'
-
-    import { gsap } from 'gsap'
-    import { ScrollTrigger } from 'gsap/ScrollTrigger'
-    import { ScrollToPlugin } from 'gsap/ScrollToPlugin'
 
     export let pageData
     export let isprevnav = false
@@ -30,36 +30,40 @@
 
     const startpos = {
         boatplus: {
-            x: 80,
+            x: 100,
+            y: 23,
         },
         boat: {
-            x: 3.9,
-            y: 20,
-            scale: 0.2,
+            x: 0,
+            y: 0,
+            scale: 0.1,
         },
         fishnet: {
-            x: 60,
-            y: 40,
-            scale: 0.2,
+            x: 32.5,
+            y: 13.8,
+            scale: 0.1,
         },
         fishingline: {
-            x1: 67.8,
-            y1: 36,
-            x2: 67.8,
-            y2: 38,
+            x1: 37,
+            y1: 10,
+            x2: 37,
+            y2: 12,
         },
         hook: {
-            x: 66.1,
-            y: 33,
-            scale: 0.2,
+            x: 36.15,
+            y: 10,
+            scale: 0.1,
         },
     }
 
-    // let nextNaved = false
     onMount(() => {
         const tlDrop = () =>
             gsap
                 .timeline()
+                .to('#boatplus', {
+                    y: -20,
+                    duration: 40,
+                }, 0)
                 .to(
                     '#boat',
                     {
@@ -70,49 +74,37 @@
                     },
                     0
                 )
-
+                .to(
+                    '#hook',
+                    { y: 28.4, duration: 40, transformOrigin: '0 100%' },
+                    0
+                )
                 .to(
                     '#fishingline',
-                    { scaleY: 18, duration: 40, transformOrigin: '0 100%' },
+                    {
+                        y: -2.6,
+                        scaleY: 12,
+                        duration: 40,
+                        transformOrigin: '0 0',
+                    },
                     0
                 )
                 .to(
                     '#fishnet',
                     {
-                        scale: 0.5,
-                        y: 52,
+                        scale: 0.3,
+                        y: 30,
                         duration: 40,
-                        transformOrigin: '50% 50%',
+                        transformOrigin: '50% 0',
                     },
                     0
                 )
                 .to('#text1', { left: 0, duration: 60 }, 10)
-
-                .to(
-                    '#ocean',
-                    {
-                        y: 12.5,
-                        scaleY: 2,
-                        duration: 40,
-                        transformOrigin: '0% 0%',
-                    },
-                    0
-                )
-                .to(
-                    '#wave1',
-                    { x: '-=11', y: 11.5, scaleY: 0.1, duration: 40 },
-                    0
-                )
-                .to(
-                    '#wave2',
-                    { x: '+=11', y: 16.2, scaleY: 0.12, duration: 40 },
-                    0
-                )
-                .to(
-                    '#wave3',
-                    { x: '-=11', y: 22.2, scaleY: 0.14, duration: 40 },
-                    0
-                )
+                .to('#wave1', { y: -10, x: '+=2', duration: 40 }, 0)
+                .to('#wave2 ', { y: -10, x: '-=2', duration: 40 }, 0)
+                .to('#wave3 ', { y: -10, x: '-=2', duration: 40 }, 0)
+                .to('#wave4 ', { y: -10, x: '-=2', duration: 40 , scaleX: 0.6, }, 0)
+                
 
         const tlUp = gsap
             .timeline()
@@ -123,12 +115,17 @@
             )
             .to(
                 '#hook',
-                { scale: 0.05, y: 5, duration: 40, transformOrigin: '50% 0' },
+                { scale: 0.05, y: 7, duration: 40, transformOrigin: '60% 0' },
                 0
             )
             .to(
                 '#fishnet',
-                { scale: 0.05, y: 0, duration: 40, transformOrigin: '50% 50%' },
+                {
+                    scale: 0.05,
+                    y: -3,
+                    duration: 40,
+                    transformOrigin: '50% 50%',
+                },
                 0
             )
 
@@ -136,43 +133,25 @@
 
         const boatIn = gsap
             .timeline()
-            .to('#boatplus', { x: 16, duration: 80 }, 20)
-            .to('#wave1', { x: '-=11', duration: 80 }, 0)
-            .to('#wave2', { x: '+=5', duration: 80 }, 0)
-            .to('#wave3', { x: '-=15', duration: 80 }, 0)
+            .to('#boatplus', { x: 45, duration: 80 }, 20)
+            .to('#wave1', { x: '-=24', duration: 80 }, 0)
+            .to('#wave2', { x: '+=4', duration: 80 }, 0)
+            .to('#wave3', { x: '-=3', duration: 80 }, 0)
+            .to('#wave4', { x: '+=2', duration: 80 }, 0)
 
-        const boatOut = gsap
-            .timeline()
-            .to('#boatplus', {
-                y: -20.5,
-                duration: 40,
-                transformOrigin: '0 100%',
-            })
-            .to(
-                '#ocean',
-                {
-                    y: -12.5,
-                    // scaleY: 2,
-                    duration: 40,
-                },
-                0
-            )
-            .to('#wave1', { x: '+=11', y: -12.5, duration: 40 }, 0)
-            .to('#wave2', { x: '+=5', y: -12.5, duration: 40 }, 0)
-            .to('#wave3', { x: '+=15', y: -12.5, duration: 40 }, 0)
+        const boatOut = gsap.timeline().to('#boatplus', {
+            y: -20.5,
+            duration: 40,
+            transformOrigin: '0 100%',
+        })
 
-        // const intro = gsap.timeline().to('#svgsvg', {opacity: 1, duration: 40})
-        // const outro = gsap.timeline().to('#svgsvg', {opacity: 0.5, duration: 40})
 
         const anim = gsap
             .timeline()
-            // .add(intro)
             .add(boatIn)
             .add(tlDrop())
             .add(tlUp)
-            // .add(textIn)
             .add(boatOut)
-        // .add(outro)
 
         const st = ScrollTrigger.create({
             trigger: '#svgbox',
@@ -208,7 +187,7 @@
 </script>
 
 <style>
-    #anim-container{
+    #anim-container {
         width: 100%;
         height: 100%;
     }
@@ -234,6 +213,7 @@
         top: 0;
         z-index: 1;
         opacity: 1;
+        background-color: #03037f;
     }
 
     #text1 {
@@ -249,8 +229,8 @@
     .content {
         width: 40%;
     }
-    #text-title{
-      padding-top: 10%;
+    #text-title {
+        padding-top: 10%;
     }
 </style>
 
@@ -268,25 +248,53 @@
 
     <div id="text1">{textIntro}</div>
 
-    <svg id="svgsvg" viewBox="0 0 100 100" style="background-color:#003399">
+    <svg id="svgsvg" viewBox="0 0 100 100" preserveAspectRatio="xMinYMin slice">
         <defs>
             <linearGradient id="bg-gradient" x1="0" x2="0" y1="0" y2="1">
                 <stop offset="0%" stop-color="rgba(84,127,221,1)" />
-                <stop offset="100%" stop-color="rgba(5,31,68,1)" />
+                <stop offset="100%" stop-color="rgba(3,3,127,1)" />
             </linearGradient>
         </defs>
-        <g transform="translate(0, {60})" id="ocean">
+        <g id="ocean">
             <rect
-                width="240"
-                height={60}
-                x="-100"
+                width="100"
+                height="50"
+                x="0"
                 y="0"
                 fill="url(#bg-gradient)" />
         </g>
-        <Wave id="wave1" x={-50} y={58} scale={0.2} />
-        <Wave id="wave2" x={30} y={62} scale={0.2} fill="#CCCCFF" />
-        <Wave id="wave3" x={-100} y={66} scale={0.15} fill="#CCCCFF" />
-        <g id="boatplus" transform="translate({startpos.boatplus.x} 0)">
+        <Wave
+            id="wave1"
+            x={0}
+            y={45}
+            scaleX={0.2}
+            scaleY={0.02}
+            fill="#3333FF" />
+        <Wave
+            id="wave2"
+            x={-4}
+            y={46}
+            scaleX={0.1}
+            scaleY={0.04}
+            fill="#1A1ABA" />
+        <Wave
+            id="wave3"
+            x={0}
+            y={48}
+            scaleX={0.21}
+            scaleY={0.2}
+            fill="#000099" />
+        <Wave
+            id="wave4"
+            x={-4}
+            y={50}
+            scaleX={0.2}
+            scaleY={0.2}
+            fill="#03037F" />
+        <g
+            id="boatplus"
+            transform="translate({startpos.boatplus.x}
+            {startpos.boatplus.y} )">
             <Boat id="boat" {...startpos.boat} />
             <Fishet id="fishnet" {...startpos.fishnet} />
             <g id="fishingline">
@@ -297,6 +305,5 @@
             </g>
             <Hook id="hook" {...startpos.hook} />
         </g>
-
     </svg>
 </div>
